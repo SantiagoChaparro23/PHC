@@ -1,0 +1,44 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+ 
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Marcadores </h4>
+        </div>
+    </div>
+</div>
+ 
+<div class="row">
+    <div class="col-10">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">{{ match.title }}</h4>
+            </div>
+            <div class="card-body">
+ 
+                <p>
+                    <b>Equipo Local:</b> {{ match.local_team }}<br/>
+                    <b>Equipo Visitante:</b> {{ match.visiting_team }}<br/>
+                    <b>Goles de Local:</b> {{ match.local_goals }}<br/>
+                    <b>Goles de Visitante:</b> {{ match.away_goals }}<br/>
+                    
+                </p>
+ 
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-6">
+                        <a href="{% url 'markers:match_list' %}"  class="btn btn-light">Regresar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}

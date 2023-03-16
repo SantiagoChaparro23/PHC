@@ -1,0 +1,71 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% block content %}
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Bases de datos</h4>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+  
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4 ">                    
+                    {% if perms.sddp.add_db %}
+                        <a class='float-right btn btn-success' href="{% url 'sddp:dbs_create'  %}">Agregar</a>                
+                    {% endif %} 
+                </h4>
+                <div class="table-responsive mt-5">
+                    <table class="table table-centered table-vertical table-nowrap mb-1">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Proyecto</th>
+                                <th>Planta</th>
+                                <th>Elementos</th>
+                                <th>Creado por</th>
+                                
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in dbs %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.description }}</td>
+                                    <td>{{ item.project.name }}</td>
+                                    <td>{{ item.plant|default_if_none:'' }}</td>
+                                    <td>{{item.marginalcostdemand_set.count}}</td>
+                                    <td>
+                                        {{ item.created_by.first_name}} {{ item.created_by.last_name}}
+                                        <br><small class='text-muted'>{{ item.created_at}}</small>
+                                    </td>
+                                    <td class='text-right'>
+                                        {% if perms.sddp.delete_db or item.created_by == request.user  %}
+                                            <a href="{% url 'sddp:dbs_delete' item.pk  %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                        {% endif %} 
+                                    </td> 
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock content %}
+

@@ -1,0 +1,151 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block head %}
+<!-- DataTables -->
+<link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+<!-- Responsive datatable examples -->
+<link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock head %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Solicitudes</h4>
+            {% comment %} {% if days %}
+                <p>
+                    Días de vacaciones: {{ days.days_vacations|floatformat }} <br />
+                    Días extras: {{ days.days_extra }} <br />
+                    Días tomados: {{ days.days_taken }} <br />
+                    Días disponibles: {{ days.days_available|floatformat }}
+                </p>
+            {% endif %} {% endcomment %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Lista
+                    {% comment %} {% if days %}
+                        <a class='float-right btn btn-success' href="{% url 'vacations:requests_create' %}">Crear</a>
+                    {% endif %} {% endcomment %}
+                </h4>
+                <div class="table-responsive">
+                    <table id="datatable-buttons" class="table table-hover table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Colaborador</th>
+                                <th>Estado</th>
+                                <th>Solicitud</th>
+                                {% comment %} <th>Estado líder</th>
+                                <th>Gerencia</th>
+                                <th>Estado gerencia</th> {% endcomment %}
+                                <th>Fecha de inicio</th>
+                                <th>Fecha de fin</th>
+                                <th>Días calendario</th>
+                                <th>Días hábiles</th>
+                                {% comment %} <th>Estado liquidación</th> {% endcomment %}
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in requests %}
+                                <tr>
+                                    <td>{{ request.collaborator }}</td>
+                                    <td>{{ request.collaborator.get_state_display }}</td>
+                                    <td>
+                                        <a href="{% url 'vacations:requests_detail' request.pk %}">{{ request.request_completed|yesno:"Aceptada,Rechazada,Pendiente" }}</a>
+                                    </td>
+                                    {% comment %} <td>{{ request.leader.first_name }} {{ request.leader.last_name }}</td> {% endcomment %}
+
+                                    {% comment %} <td>
+                                        {% if request.accepted_leader == True %} Aceptada
+                                        {% elif request.accepted_leader == False %} Rechazada
+                                        {% else %} Pendiente
+                                        {% endif %}
+                                    </td> {% endcomment %}
+
+                                    {% comment %} <td>{{ request.final_acceptor.first_name }} 
+                                        {{ request.final_acceptor.last_name }}</td> {% endcomment %}
+
+                                    {% comment %} <td>
+                                        {% if request.accepted_final_acceptor == True %} Aceptada
+                                        {% elif request.accepted_final_acceptor == False %} Rechazada
+                                        {% else %} Pendiente
+                                        {% endif %}
+                                    </td> {% endcomment %}
+
+                                    <td>{{ request.start_date_vacations }}</td>
+                                    <td>{{ request.end_date_vacations }}</td>
+                                    <td>{{ request.calendar_days_taken }}</td>
+                                    <td>{{ request.business_days_taken }}</td>
+
+                                    {% comment %} <td>
+                                        {% if request.accepted_liquidation == True %} Aceptada
+                                        {% elif request.accepted_liquidation == False %} Rechazada
+                                        {% else %}  Pendiente
+                                        {% endif %}
+                                    </td> {% endcomment %}
+
+                                    <td class='text-right'>
+                                            <a href="{% url 'vacations:requests_change' request.pk %}" class="btn btn-warning btn-sm waves-effect waves-light">Editar</a>
+                                            <a href="{% url 'vacations:requests_delete' request.pk %}" class="btn btn-danger btn-sm waves-effect waves-light">Eliminar</a>
+
+                                            {% comment %} <a href="{% url 'vacations:liquidation' request.pk  %}" class="btn btn-danger btn-sm waves-effect waves-light">Liquidacion</a> {% endcomment %}
+                          
+                                            {% comment %} <a href="{% url 'vacations:superior_acceptance_requests' request.pk  %}"
+                                               class="btn btn-danger btn-sm waves-effect waves-light">Aceptacion superior</a> {% endcomment %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<!-- JAVASCRIPT -->
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+{% comment %} <script src="{% static 'libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/metismenu/metisMenu.min.js' %}"></script> {% endcomment %}
+<script src="{% static 'libs/simplebar/simplebar.min.js' %}"></script>
+<script src="{% static 'libs/node-waves/waves.min.js' %}"></script>
+<script src="{% static 'libs/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+
+<!-- Required datatable js -->
+<script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+
+<!-- Buttons examples -->
+<script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'libs/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'libs/pdfmake/build/pdfmake.min.js' %}"></script>
+<script src="{% static 'libs/pdfmake/build/vfs_fonts.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+
+<!-- Responsive examples -->
+<script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+<!-- Datatable init js -->
+<script src="{% static 'js/pages/datatables.init.js' %}"></script>
+
+<!-- App js -->
+{% comment %} <script src="{% static 'js/app.js' %}"></script> {% endcomment %}
+{% endblock scripts %}

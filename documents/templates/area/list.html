@@ -1,0 +1,60 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Área</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Lista
+                    {% if perms.documents.view_area %}
+                    <a class='float-right btn btn-success' href="{% url 'documents:area_create' %}">Crear</a>
+                    {% endif %}
+                </h4>
+
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Área</th>
+                                <!-- <th>Título</th> -->
+                                <!-- <th>Descripción</th> -->
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in area %}
+                                <tr>
+                                    <td>{{ item.area }}</td>
+                                    <!-- <td>{{ item.title}}</td>
+                                    <td>{{ item.description}}</td> -->
+                                    <td class="text-right">
+                                        {% if perms.documents.change_area %}
+                                        <a href="{% url 'documents:area_change' item.id %}" class="btn btn-warning btn-sm">Editar</a>
+                                        {% endif %}
+                                        {% if perms.documents.delete_area %}
+                                        <a href="{% url 'documents:area_delete' item.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

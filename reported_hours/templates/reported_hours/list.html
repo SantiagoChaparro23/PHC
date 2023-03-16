@@ -1,0 +1,515 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load format %}
+{% block head %}
+    <link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+    <link href="{% static 'libs/select2/css/select2.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock head %}
+
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Horas reportadas</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+
+    {% if last_report %}
+        <div class="col-xl-12">
+            <div class='alert alert-warning'>
+                Tu último reporte fue <strong>{{last_report}}</strong>
+            </div>
+        </div>
+    {% endif %}
+
+
+    <form method='post' class="col-xl-12">
+        {% csrf_token %}
+        <div class="card">
+            <div class="card-body">
+                <div class='row'>
+                    <div class='col-md-3'>
+                        <div class='form-group'>
+                            <label>Proyecto</label>
+                            <select name="project_id" id=""  class="select2project form-control">
+                                <option value='0'>Seleccione</option>
+                                {% for project in projects_search %}
+                                    <option {% if project_id == project.pk %} selected {% endif %} value="{{project.id}}"> {{project.code}} - {{project.client.client}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    {% if activities %}
+
+                    
+                        {% if perms.reported_hours.multiple_users %}
+                            <div class='col-md-3'>
+                                <div class='form-group'>
+                                    <label>Usuario</label>
+                                    <select required name="user_id" id=""  class="select2 form-control">
+                                        {% for user in users %}
+                                            <option {% if request.user.id == user.id  %} selected {% endif %} value="{{user.id}}"> {{user.first_name}}  {{user.last_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        {% endif %} 
+
+                        <div class='col-md-3'>
+                            <div class='form-group'>
+                                <label>Actividad</label>
+                                <select  name="activity_id" id=""  class="select2activity form-control">
+                                        <option value="">Seleccione</option>
+                                    {% for activity in activities %}
+                                        <option data-description="{{activity.activity.description}}" id='activity{{activity.activity.id}}'  value="{{activity.activity.id}}"> {{activity.activity.activity}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class='col-md-3'>
+                            <div class="form-group">
+                                <label for="report_date_at" class=" requiredField">
+                                Fecha de reporte
+                                </label>        
+                            
+                                {% if  drafts.count %}
+                                    <input type="text" name="report_date_at" value="{{ drafts.0.format_date  }}" class=" form-control" required=""  readonly="readonly" style='background-color:#EEE'>
+                                {% else %}
+                                    <input type="text" name="report_date_at" value="{{ today }}" class="dateinput form-control" required="" id="report_date_at" readonly="readonly">
+                                {% endif %}
+                            
+                                
+
+                                
+
+                            </div>
+                        </div>
+
+                        <div class='col-md-3'>
+                            <div class='row'>
+                                <div class='col-md-6'>
+                                    <div class="form-group">
+                                        <label  class=" requiredField">Horas</label>        
+                                        <select required name="hours" class="form-control">
+                                            {% for hour in hours%}
+                                                <option  value="{{hour.0}}"> {{hour.0}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class='col-md-6'>
+                                    <div class="form-group">
+                                        <label  class=" requiredField">Minutos</label>        
+                                        <select required name="minutes" class="form-control">
+                                            {% for minute in minutes %}
+                                                <option  value="{{minute.0}}"> {{minute.0}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <div class='col-md-9 pt-2'>
+                            <h3 class='mb-0' id='activityTitle'></h3>
+                            <p id='activityContent'></p>
+                        </div>
+                    {% endif %}
+                </div>
+                {% if activities %}
+                    <div class='row'>
+                        <div class='col-md-3'>
+                            <div class='form-group'>
+                                <label>Comentarios</label>
+                                <textarea  name='description' class="form-control" style='resize:none'></textarea>
+                            </div>
+                        </div>
+                        <div class='col-md-3'>
+                        
+                                <button type='submit' class='btn btn-info mt-5'>Guardar</button>
+                        
+                        </div>
+
+                    </div>
+                 {% endif %}
+            </div>
+        </div>
+    </form>
+
+    
+    {% if drafts.count %}
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">
+                        Pendientes de aplicar
+                    </h4>
+                
+
+                    {% if drafts %}
+                        <div class="table-responsive">
+                            <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha reporte</th>
+                                        {% if perms.reported_hours.multiple_users %}
+                                            <th>Usuario</th>
+                                        {% endif %} 
+                                        <th>Código</th>
+                                        <th>Actividad</th>
+                                        <th>Tiempo Reportado</th>
+                                        <th class="text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for draft in drafts %}
+                                        <tr>
+                                            <td>
+                                                {{ draft.report_date_at }} 
+                                            </td>
+                                            {% if perms.reported_hours.multiple_users %}
+                                            <td>{{ draft.user.first_name }} {{ draft.user.last_name }}</td>
+                                            {% endif %} 
+                                            <td>
+                                                {{ draft.code }} -   {{ draft.code.client.client }}
+                                            </td>
+                                            <td>
+                                                {{ draft.activity.activity }}
+                                            </td>
+                                            <td>
+                                                {{ draft.format_minutes }} 
+                                                <small class='text-muted'> / {{draft.time}} Min.<small>
+                                            </td>
+                                            <td class='text-right'>
+                                                <a class='btn btn-danger btn-sm' href="{% url 'reported_hours:remove_draft' draft.pk  %}"  onclick="return confirm('Esta seguro?')">Eliminar</a>
+                                            </td>
+                                            
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                    <a class='btn btn-success' href='{% url 'reported_hours:apply_drafts'  %}'>Aplicar</a>
+                </div>
+                
+            </div>
+            
+            
+        </div>
+    {% endif %}
+
+    
+    
+
+  
+</div>
+
+
+{% if grouped %}
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">
+                        Reportado por días
+                    </h4>
+                      <p>Seleccionando la fecha puedes ver el detalle de ese día</p>
+                    <div class="table-responsive">
+                        <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Fecha reporte</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for day in grouped %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'reported_hours:reported_hours_list' %}?date={{ day.report_date_at|date:"Y-m-d" }}#table">
+                                                {{ day.report_date_at|date:"l" }}
+                                                
+                                                {{ day.report_date_at|date:"d" }}
+                                                de
+                                                {{ day.report_date_at|date:"F" }}
+                                            </a>
+                                        </td>
+                                        
+                                        <td>
+                                        
+                                        {{day.hour}}:{{day.minute}} <small class='text-muted'> / {{day.dcount}} min.</small>
+                                        </td>
+                                    
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+    
+            <div  id='table'></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endif %}
+
+
+{% if page.object_list %}
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">
+                        Tus horas reportadas
+                        {% if request.GET.date  %}
+                        
+                            <small>
+                                en la fecha
+                                {{ request.GET.date}}
+                                <a href='{% url 'reported_hours:reported_hours_list' %}'><i class="fas fa-trash"></i></a>
+                            </small>
+                        {% endif %}
+                    
+                    
+                    </h4>
+                    <div class="table-responsive">
+                        <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Fecha reporte</th>
+                                    <th>Código</th>
+                                    
+                                    <th>Actividad</th>
+                                    <th>Tiempo Reportado</th>
+                                
+                                    {% comment %} <th>Creado</th> {% endcomment %}
+                                    <th class="text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reported_hours in page.object_list %}
+                                    <tr>
+                                        <td>
+                                            {{ reported_hours.report_date_at|date:"Y-m-d" }}
+                                        </td>
+                                        
+                                        <td>
+                                            <a href="{% url 'reported_hours:reported_hours_create' %}?project={{reported_hours.code.pk}}">
+                                                {{ reported_hours }}
+                                            </a>
+                                        </td>
+                                        
+                                        <td>
+                                            {{ reported_hours.activity.activity }}
+                                        </td>
+                                        <td>
+                                            
+                                            {{ reported_hours.format_minutes }} 
+                                            <small class='text-muted'> / {{reported_hours.time}} Min.<small>
+                                        </td>
+                                        <td>  
+                                            {% if reported_hours|can_delete_report %}
+                                                <a href="{% url 'reported_hours:reported_hours_delete' reported_hours.pk %}" class="btn btn-danger btn-sm waves-effect waves-light">Eliminar</a> 
+                                            {% endif %}                                            
+                                        </td>
+                                    
+                                        {% comment %} <td>
+                                            {{ reported_hours.created_at }}
+                                        </td>
+                                        <td class='text-right'>
+                                            <a href="{% url 'budgeted_hours:activity_view' activity.pk  %}" class="btn btn-warning btn-sm waves-effect waves-light">Editar</a>
+                                            <a href="{% url 'budgeted_hours:activity_delete' activity.pk %}" class="btn btn-danger btn-sm waves-effect waves-light">Eliminar</a> 
+                                        </td> {% endcomment %}
+                                      
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <div class="row">     
+                            <div class="col-sm-12 col-md-7">
+                                <div class="dataTables_paginate paging_simple_numbers " id="">
+                                    <ul class="pagination">
+                                        
+                                        {% if page.has_previous %}
+                                            <li class="paginate_button page-item previous" id="datatable_previous">
+                                                <a href="{% url 'reported_hours:reported_hours_list' %}?page={{page.previous_page_number}}" aria-controls="datatable" data-dt-idx="0" tabindex="0" class="page-link">Anterior</a>
+                                            </li>   
+                                        {% endif %}
+                                        
+                                    
+                                        {% if page.has_next %}
+                                            <li class="paginate_button page-item next" id="datatable_next">
+                                                <a href="{% url 'reported_hours:reported_hours_list' %}?page={{page.next_page_number}}" aria-controls="datatable" data-dt-idx="7" tabindex="0" class="page-link">Siguiente</a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Proyectos
+                </h4>
+                <div class='row'>
+                    <div class='col-md-12'>
+                        <p>Aquí puedes buscar el proyecto a reportar por el código del proyecto o nombre del cliente.</p>
+                        <form action='{% url 'reported_hours:reported_hours_list' %}' class="form-inline">
+                         
+                            <input type="search" name='q' style='min-width:300px' class="form-control mb-2 mr-sm-2" value="{{query}}" placeholder="Buscar por código  o cliente">
+                            <button type="submit" class="btn btn-primary mb-2">Consultar</button>
+                        </form>
+                    </div>
+                </div>
+
+
+                {% if projects %}
+                    <div class="table-responsive">
+                        <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Cliente</th>
+                                    <th class="text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in projects.object_list %}
+                                    <tr>
+                                    
+                                        <td>
+                                        <a href="{% url 'reported_hours:reported_hours_create' %}?project={{project.pk}}">
+                                                {{ project.code }}
+                                            </a>    
+                                        </td>
+                                        <td>
+                                            {{ project.client.client }}
+                                        </td>
+                                        
+                                        <td class='text-right'>
+                                            <a href="{% url 'reported_hours:reported_hours_create' %}?project={{project.pk}}" class="btn btn-success btn-sm ">Reportar</a>
+
+                                       
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row">     
+                        <div class="col-sm-12 col-md-7">
+                            <div class="dataTables_paginate paging_simple_numbers " id="">
+                                <ul class="pagination">
+                                    
+                                    {% if projects.has_previous %}
+                                    <li class="paginate_button page-item previous" id="datatable_previous">
+                                            <a href="{% url 'reported_hours:reported_hours_list'  %}?page_project={{projects.previous_page_number}}"  class="page-link">Anterior</a>
+                                        </li>   
+                                    {% endif %}
+                                    
+                                
+                                    {% if projects.has_next %}
+                                    <li class="paginate_button page-item next" id="datatable_next">
+                                            <a href="{% url 'reported_hours:reported_hours_list'%}?page_project={{projects.next_page_number}}"  class="page-link">Siguiente</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    
+                    </div>
+
+
+                 {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+<!-- JAVASCRIPT -->
+    <script src="{% static 'libs/select2/js/select2.min.js' %}"></script>
+    <script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+ 
+   
+    <script>
+   
+    $(document).ready(function(){
+
+
+        var activities = {{  activitiesjson | safe  }}
+
+        
+        console.log(activities)
+
+        var path =  "{{ request.scheme }}://{{ request.get_host }}{% url 'reported_hours:reported_hours_list' %}"
+        $(".select2activity").select2()
+
+        $('.select2activity').on('select2:selecting', function(e) {
+            console.log(e.params.args.data)
+
+            var {id, text} =  e.params.args.data
+
+            var description = $(`#activity${id}`).data('description')
+
+            if(description){
+                $('#activityTitle').html(text)
+                $('#activityContent').html(description)
+            }
+            
+            
+        });
+
+        
+        
+        $(".select2project").select2()
+        $('.select2project').on('select2:selecting', function(e) {
+            const { id } =  e.params.args.data
+            window.location  = `${path}?project_id=${id}`
+            
+        });
+        $("#report_date_at").attr('readonly', 'readonly')
+        $("#report_date_at").datepicker({
+                autoclose:!0,
+                format: 'yyyy-mm-dd',
+                orientation: 'bottom',
+                todayHighlight: true,
+            })
+
+    })
+    </script>
+{% endblock scripts %}
+
+
+
+

@@ -1,0 +1,60 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Estudios de coordinación de protecciones</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-10">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">{{ protection_coordination_studies.budgeted_hours }}</h4>
+            </div>
+            <div class="card-body">
+
+                <p>
+                    <b>Palabras clave:</b> {{ protection_coordination_studies.title|default:"" }}<br/>
+                    <b>Fecha:</b> {{ protection_coordination_studies.created_at }}<br/>
+                    <b>Cliente:</b> {{ protection_coordination_studies.client|default:"" }}<br/>
+                    <b>Responsable:</b> {{ protection_coordination_studies.created_by.first_name }} {{ protection_coordination_studies.created_by.last_name }}<br/>
+                    <b>Tipo de lección:</b> {{ protection_coordination_studies.get_lesson_type_display }}<br/>
+                    <b>Descripción:</b> {{ protection_coordination_studies.description }}<br/>
+                    <b>Plan de acción propuesto:</b> {{ protection_coordination_studies.action_plan }}<br/>
+                    {% if protection_coordination_studies.file %}
+                        <b>Archivo:</b> <a href="/{{ protection_coordination_studies.file }}" target="_blank">Descargar</a><br/>
+                    {% endif %}
+
+                    {% if protection_coordination_studies.get_lesson_type_display == "Técnica" %}
+                        <b>Subcategoría:</b> {{ protection_coordination_studies.get_subcategory_display|default:"" }}<br/>
+                        <b>Descripción de subcategoría:</b> {{ protection_coordination_studies.subcategory_description|default:"" }}<br/>
+                        <b>Tipo de elemento:</b> {{ protection_coordination_studies.get_element_type_display|default:"" }}<br/>
+                        <b>Descripción de elemento:</b> {{ protection_coordination_studies.element_type_description|default:"" }}<br/>
+                        <b>Protección:</b> {{ protection_coordination_studies.protection|default:"" }}<br/>
+                        <b>Marca de relé:</b> {{ protection_coordination_studies.get_relay_brand_display|default:"" }}<br/>
+                        <b>Descripción relé:</b> {{ protection_coordination_studies.relay_brand_description|default:"" }}<br/>
+                        <b>Modelo de relé:</b> {{ protection_coordination_studies.relay_model|default:"" }}<br/>
+                    {% endif %}
+                </p>
+
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-6">
+                        <a href="{% url 'lessons:protection_coordination_studies_list' %}"  class="btn btn-light">Regresar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}

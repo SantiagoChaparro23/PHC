@@ -1,0 +1,698 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block head %}
+    <link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+{% endblock head %}
+
+{% block scripts %}
+    <script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+
+
+    <script>
+        $(function(){
+              $("#id_date").datepicker({
+                  autoclose:!0,
+                  format: 'yyyy-mm-dd',
+                  todayHighlight:!0})
+              $("#date_neteffectivecapacity").datepicker({autoclose:!0,todayHighlight:!0,  format: 'yyyy-mm-dd',})
+                                             .on('change', function(selected){
+                                                $('#form_neteffectivecapacity').submit()
+                                             }
+    );
+              
+        })
+    </script>
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    <script>
+
+
+        // Standard values used for some graphics
+        //      Config for download images ----------------------
+        var config = {
+            toImageButtonOptions: {
+            format: 'svg', // one of png, svg, jpeg, webp
+            filename: 'Planta que margina',
+            height: 600,
+            width: 700,
+            scale: 1 // Multiply title/legend/axis/canvas sizes by this factor
+            }
+        }
+
+        // ROW 1 -------------------------------------------------------------------------------
+        // Capacidad efectiva neta ----------------------------
+        //    Table
+        //      Cells not center by open bug: https://github.com/plotly/plotly.js/issues/3251
+        var chart = JSON.parse('{{net_effective_capacity.chart|safe}}')
+        var rowOddColor = 'rgb(220, 230, 241)'
+        var rowEvenColor = 'white'
+
+        //      Add bold to last row
+        var amount_rows = chart[0].length
+        chart[0][amount_rows-1] = '<b>' + chart[0][amount_rows-1] + '</b>'
+        chart[1][amount_rows-1] = '<b>' + chart[1][amount_rows-1] + '</b>'
+        chart[2][amount_rows-1] = '<b>' + chart[2][amount_rows-1] + '</b>'
+
+        console.log('TABLA DATOS')
+        console.log(chart.slice(0, chart.length-1))
+
+        var table = {
+            type: 'table',
+            header: {
+              values: ['Tecnología', 'Capacidad<br>[MW]', 'Participación<br>[%]'],
+              align: ["center", "center"],
+              line: {color: "grey", width: 1},
+              fill: {color: ['rgb(4, 100, 164)']},
+              font: {family: "Droid Sans", size: 15, color: "white"}
+
+            },
+            cells: {
+              values: chart.slice(0, chart.length-1),
+              align: ["center", "center"],
+              line: {color: "rgb(211, 211, 211)", width: 1},
+              height: 30,
+              fill: {color: [[rowEvenColor, rowOddColor, rowEvenColor, rowOddColor,
+                              rowEvenColor, rowOddColor, rowEvenColor, rowOddColor,
+                              rowEvenColor, rowOddColor, rowEvenColor, rowOddColor]]},
+              font: {family: "Droid Sans", size: 15, color: "rgb(90, 90, 90)"}
+            },
+            domain: {x: [0.02, 0.5], y: [0, 1]}
+        }
+
+        //      Graph
+        var trace = {
+            labels: chart[0].slice(0, chart[0].length-1),
+            values: chart[1].slice(0, chart[1].length-1),
+            domain: {x: [0.6, 1], y: [0,1]},
+            name: '',
+            hoverinfo: 'label+percent+name',
+            hole: .4,
+            type: 'pie',
+            marker: {
+                colors: chart[3]
+              }
+        }
+
+        data = [table, trace]
+
+        var layout = {
+            title: 'Capacidad efectiva neta',
+            height: 600,
+            margin:{
+                l: 0,
+                r: 0,
+                u: 0,
+                b: 0
+            }     
+        }   
+
+        Plotly.newPlot('netEffectiveCapacityDiv', data, layout, config);
+
+
+        // Generation graphic ----------------------------
+    
+        
+        var jqxhr = $.get( "/meec/standar/generation", function() {})
+        .done(function(response) {
+
+           $('#loading_g').hide()
+         
+        
+            var names_traces = JSON.parse(response.names_traces)
+            var colors_generation = JSON.parse(response.colors_generation)
+            var chart3 = JSON.parse(response.chart)
+
+            
+            //      Build traces of fuels
+            names_traces.forEach(function(name_trace, index) {
+
+                
+                var trace = {
+                    x: chart3[0],
+                    y: chart3[index+1],
+                    hoverinfo:'x+y',
+                    mode:'lines',
+                    line: {'shape':'spline', 
+                            'color': colors_generation[name_trace],
+                            'width': 0 
+                            },
+                    name: name_trace,
+                    fillcolor:colors_generation[name_trace],
+                    stackgroup:'one',
+                    type: 'scatter'                  
+
+                }
+
+                data.push(trace)
+
+                })
+
+                //      Thermal participation trace
+                var trace_thermal = {
+                title: 'Generación',
+                x: chart3[0], 
+                y: chart3[chart3.length - 1],
+                hoverinfo: 'x+y',
+                mode: 'lines',
+                name: 'Participacíon térmica',
+                line: {width:2, 
+                        dash:'dash', 
+                        color:'rgb(0, 0, 0)'
+                        },
+                stackgroup: null,
+                yaxis: 'y2',
+                type: 'scatter',
+                margin:{r:0}
+                }
+
+                data.push(trace_thermal)
+
+                //      Layout
+                var layout = {
+                height: 500,
+                xaxis: {
+                    type:'date',
+                    title: 'Tiempo',
+                    tickangle : -90,
+                    tickformatstops : [
+                        {
+                            dtickrange:[0, 'M12'],
+                            value:"%m/%Y"
+                        },
+                    ],
+                    nticks:30                 
+                },
+
+                yaxis: {
+                    exponentformat: 'power',
+                    title: 'Generación mensual (GWh)'
+                },
+
+                yaxis2: {
+                    title: 'Participacíon térmica %',
+                    range: [0, 100],
+                    overlaying: 'y',
+                    side: 'right',
+                    showgrid: false,
+                },
+
+                showlegend: true,
+                plot_bgcolor:'#ffffff',
+                legend:{
+                    "x": -0.0228945952895,
+                    "y": -0.489563896463,
+                    "orientation": "h",
+                    "yanchor": "top"
+                }
+                };
+
+                Plotly.newPlot('generationDiv', data, layout, config);
+
+        })
+       
+        
+
+
+
+        // ROW 2 -------------------------------------------------------------------------------
+        // Monthly bag price  -------------------------------
+        var chart = JSON.parse('{{monthly_bag_prices.chart|safe}}');
+        var chart_boys = JSON.parse('{{monthly_bag_prices.boy|safe}}');
+        var chart_girls = JSON.parse('{{monthly_bag_prices.girl|safe}}');
+
+        var bag_prices_trace = {
+            x: chart[0],
+            y: chart[1],
+            mode: 'lines',
+            name: 'Precio de bolsa mensual',
+            line: {
+                shape: 'spline', 
+                smoothing:1.3,
+                color: '#0261A1',
+                width: 3                
+            },
+            type: 'scatter'
+        };
+        // console.log(monthly_bag_prices)
+
+        var males_trace = {
+            x: chart_boys[0],
+            y: chart_boys[1],
+            type: 'scatter',
+            mode:'markers',
+            marker_color:'#ED7D31',
+            line:{'shape':'spline', 'smoothing':1.3},
+            opacity:1, 
+            name:'Fenómeno del Niño',
+            textposition:'bottom center',          
+        };
+
+        var females_trace = {
+            x: chart_girls[0],
+            y: chart_girls[1],
+            type: 'scatter',
+            mode:'markers',
+            marker_color:'#38A52B',
+            line:{'shape':'spline', 'smoothing':1.3},
+            opacity:1, 
+            name:'Fenómeno de la Niña',
+            textposition:'bottom center',       
+        };                      
+
+        var data1 = [bag_prices_trace, males_trace, females_trace]
+
+        var layout1 = {
+            title: 'Precio de bolsa mensual',
+            height: 600,
+            xaxis: {
+                type:'date',
+                title: 'Tiempo',
+                tickformat: "%m/%Y",
+                tickangle: -90,
+                nticks:30,
+                gridcolor: 'rgb(238,238,238)'
+            },
+            yaxis: {
+                title: 'COP/kWh',
+                gridcolor: 'rgb(238,238,238)',
+                exponentformat: 'SI'
+            },
+            showlegend: true,
+            legend:{
+                x: -0.0228945952895,
+                y: -0.489563896463,
+                orientation: "h",
+                yanchor: "top"
+            }              
+        };
+
+        Plotly.newPlot('monthlyBagPriceDiv', data1, layout1, config);
+
+
+        // Yearly bag price  -------------------------------
+        var chart = JSON.parse('{{yearly_bag_prices.chart|safe}}');
+                
+        var trace1 = {
+            x: chart[0],
+            y: chart[1],
+            mode: 'lines',
+            name: 'Precio bolsa anual',
+            line: {
+                shape: 'spline', 
+                smoothing:1.3,
+                color: '#0261A1',
+                width: 3                
+            },  
+            type: 'scatter'
+        };
+
+        var data3 = [trace1]
+
+        var layout3 = {
+            title:'Precio de bolsa anual',
+            height: 600,
+            xaxis: {
+                type:'date',
+                title: 'Tiempo',
+                tickformat: "%Y",
+                tickangle: -90
+            },
+            yaxis: {
+                title: 'COP/kWh'
+            },
+            showlegend: false       
+        };
+
+        Plotly.newPlot('yearlyBagPriceDiv', data3, layout3, config);      
+
+
+        // ROW 3 -------------------------------------------------------------------------------
+        // Energy demand -------------------------------
+        var data = []
+
+        var chart = JSON.parse('{{maximum_national_offer_price.chart|safe}}')
+
+        var data2 = [
+            {
+                x: chart[0],
+                y: chart[1],
+                type: 'bar',
+                base: 0,
+                marker: {
+                    color:'#0261A1'
+                }                    
+            }
+        ];
+
+        var layout2 = {
+            title: 'Crecimiento de la demanda de energía',
+            height: 500,
+            xaxis:{
+                type:'date',
+                tickangle: -90,
+                tickformat: "%Y",
+                title: 'Tiempo',
+                dtick: "M12"
+            },
+            yaxis:{
+                title: '%',
+                exponentformat: 'SI'
+            },
+            plot_bgcolor:'#ffffff',
+        }
+
+        Plotly.newPlot('energyDemandDiv', data2, layout2, config);
+
+
+        // Margin plant ----------------------------
+        var chart4 = JSON.parse('{{marginal_plant.chart|safe}}')                    
+
+        var trace = {
+                x: chart4[0],
+                y: chart4[1],
+                type: 'bar',
+                base: 0,
+                marker: {
+                    color:'#0261A1'
+                }
+            }
+
+        var data = [trace]
+
+        var layout2 = {
+            title: 'Planta que margina',
+            height: 500,      
+            xaxis: {title: 'Planta'},
+            yaxis: {
+                title: 'Veces que margina',
+                exponentformat: 'SI'
+            },
+            plot_bgcolor:'#ffffff'
+        }
+
+        Plotly.newPlot('marginPlantDiv', data, layout2, config);
+
+
+        // ROW 4 -------------------------------------------------------------------------------
+        // useful_percentage_chart -------------------------------------
+        var chart = JSON.parse('{{useful_percentage_chart.chart|safe}}');
+                
+        var trace1 = {
+            x: chart[0],
+            y: chart[1],
+            mode: 'lines',
+            name: 'Embalse agregado del sistema',
+            line: {
+                shape: 'spline', 
+                smoothing:1.3,
+                color: '#0261A1',
+                width: 3                
+            },
+            type: 'scatter'      
+        }
+
+
+        var chart = JSON.parse('{{daily_contributions_by_month.chart|safe}}');
+       
+
+        var bag_prices_trace = {
+            x: chart[0],
+            y: chart[1],
+            mode: 'lines',
+            name: 'Historico Aportes Diario',
+            line: {
+                shape: 'spline', 
+                smoothing:1.3,
+                color: '#0261A1',
+                width: 3                
+            },  
+            type: 'scatter'
+        };
+
+        var data3 = [trace1]
+
+        var layout3 = {
+            title:'Embalse agregado del sistema',
+            type: 'scatter'
+        };
+        // console.log(monthly_bag_prices)
+
+                        
+
+        var data1 = [bag_prices_trace]
+
+        var layout1 = {
+            title: 'Historico Aportes Mensual',
+            height: 600,
+            xaxis: {
+                type:'date',
+                title: 'Tiempo',
+                tickformat: "%m/%Y",
+                tickangle: -90,
+                nticks:30,
+                gridcolor: 'rgb(238,238,238)'
+            },
+            yaxis: {
+                title: '%'
+            },
+            showlegend: false       
+        };
+
+          var layout3 = {
+            title:'Embalse agregado del sistema',
+            height: 600,
+            xaxis: {
+                type:'date',
+                title: 'Tiempo',
+                tickformat: "%m/%Y",
+                tickangle: -90,
+                nticks:30,
+                gridcolor: 'rgb(238,238,238)'
+            },
+            yaxis: {
+                title: '%'
+            },
+            showlegend: false       
+        };
+
+        Plotly.newPlot('usefulPercentageChart', data3, layout3, config);        
+
+
+        Plotly.newPlot('dailyContributionsByMonthDiv', data1, layout1, config);
+
+
+
+    </script>
+
+
+
+{% endblock scripts %}
+
+
+{% block content %}
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="page-title-box">
+                <h4>{% trans "dashboard" %}</h4>
+                <h4>{{hello}}</h4>
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Lexa</a></li>
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <!-- end page title -->
+  
+    
+
+    <div class="row">
+
+
+        <!-- Net effective capacity --> 
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-body">
+
+                    <form class='row mb-3' id='form_neteffectivecapacity'>
+
+                        <div class='col-xl-7'>
+
+                            <div class="form-group" format="yyyy-mm-dd" autoclose="true">
+                                <label>Fecha</label>   
+                              
+                                <input type="text" class="form-control" id="date_neteffectivecapacity" name="date_neteffectivecapacity"  value="{{net_effective_capacity.date}}">
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>                                    
+                            </div>                            
+
+                        </div>
+
+                    </form>
+
+                    <div id='netEffectiveCapacityDiv'></div>
+
+                    <form action="{% url 'dashboard:standard_downloads' %}">
+                        <button name='net_effective_capacity' type="submit" class='btn btn-info mt-3'>Descargar datos</button>              
+                    </form>     
+
+                </div>
+            </div>
+        </div>
+
+
+         <!-- Generation graphic -->
+        <div class="col-xl-6">
+            <div class="card relative" style="min-height: 500px;">
+                <div id='loading_g' style='position: absolute; width: 100%; height: 100%; background-color: #cccccc9c ; border-radius: .25rem;'>
+                    <i class="fas fa-spinner fa-spin" style='position:absolute; top:50%; left:50%'></i>
+                </div>
+                <div class="card-body">
+
+                    
+
+                    <div id='generationDiv'></div>
+                    <form action="{% url 'dashboard:standard_downloads' %}">
+                        <button name='generation' type="submit" class='btn btn-info mt-3'>Descargar datos</button>              
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly bag price -->
+        <div class='col-xl-6'>
+            <div class="card">
+                <div class="card-body">
+
+                    <div id='monthlyBagPriceDiv'></div>
+                    <form action="{% url 'dashboard:standard_downloads' %}">
+                        <button name='monthly_bag_price' type="submit" class='btn btn-info mt-3'>Descargar datos</button>              
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Yearly bag PriceDiv -->
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-body">
+
+                    <div id='yearlyBagPriceDiv'></div>
+                    <form action="{% url 'dashboard:standard_downloads' %}">
+                        <button name='yearly_bag_price' type="submit" class='btn btn-info mt-3'>Descargar datos</button>              
+                    </form> 
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Energy demand -->
+        <div class='col-xl-6'>
+            <div class="card">
+                <div class="card-body">
+                    <div id='energyDemandDiv'></div>
+                    <form action="{% url 'dashboard:standard_downloads' %}">
+                        <button name='energy_demand' type="submit" class='btn btn-info mt-3'>Descargar datos</button>              
+                    </form>                    
+                </div>
+            </div>
+        </div>        
+
+  
+        <!-- Margin plant -->
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-body">
+                   
+
+                    <form class='row mb-3'>
+
+                        <div class='col-xl-3'>
+                            Cantidad de plantas
+                            <input type="text" class="form-control" name="amount_plant_margin" value="{{marginal_plant.amount_plants}}">
+
+                        </div>
+
+                        <div class='col-xl-7'>
+                            <div class="input-daterange input-group" data-date-format="yyyy-mm-dd"  data-date-autoclose="true"  data-provide="datepicker">
+                                <div class='row'> 
+
+                                    <div class='col-xl-6'>
+                                        Fecha inicial
+                                        <input type="text" class="form-control" name="start_plant_margin"  data-date-format="yyyy-mm-dd" value="{{marginal_plant.start}}" />                                        
+                                    </div>
+
+                                    <div class='col-xl-6'>
+                                        Fecha final
+                                        <input type="text" class="form-control" name="end_plant_margin" data-date-format="yyyy-mm-dd" value="{{marginal_plant.end}}" />                                        
+                                    </div>                                    
+
+                                </div>
+                            </div>                            
+                        </div>
+
+                        <div class='col-xl-2'>
+                            <button type="submit" class='btn btn-info mt-3'>Calcular</button>
+                        </div>
+
+                    </form>
+
+                    <div id='marginPlantDiv'></div>
+                    <form action="{% url 'dashboard:standard_downloads' %}">
+                        <input name='start_plant_margin' type="hidden" value="{{marginal_plant.start}}">
+                        <input name='end_plant_margin' type="hidden" value="{{marginal_plant.end}}">
+                        <input name='amount_plant_margin' type="hidden" value="{{marginal_plant.amount_plants}}">
+                        <button name='marginal_plant' type="submit" class='btn btn-info mt-3'>Descargar datos</button>                  
+                    </form>
+                </div>
+            </div>
+        </div>          
+
+
+        
+        <!-- System Aggregate Reservoir -->
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-body">
+
+                    <div id='usefulPercentageChart'></div>
+                    <form action="{% url 'dashboard:standard_downloads' %}">
+                        <button name='useful_percentage_chart' type="submit" class='btn btn-info mt-3'>Descargar datos</button>              
+                    </form> 
+
+                </div>
+            </div>
+        </div>         
+
+ 
+
+
+
+        <div class='col-xl-6'>
+            <div class="card">
+                <div class="card-body">
+
+                    <div id='dailyContributionsByMonthDiv'></div>
+                    <form action="{% url 'dashboard:standard_downloads' %}">
+                        <button name='daily_contributions_by_month' type="submit" class='btn btn-info mt-3'>Descargar datos</button>              
+                    </form> 
+
+                </div>
+            </div>
+        </div>     
+
+       
+
+    </div>
+    <!-- end row -->
+
+
+
+{% endblock content %}
+

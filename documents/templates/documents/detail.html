@@ -1,0 +1,47 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+ 
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Plantillas PHC </h4>
+        </div>
+    </div>
+</div>
+ 
+<div class="row">
+    <div class="col-10">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">{{ documents.title }}</h4>
+            </div>
+            <div class="card-body">
+ 
+                <p>
+                    <b>Fecha:</b> {{ documents.created_at }}<br/>
+                    <b>Responsable:</b> {{ documents.created_by }}<br/>
+                    <b>Area:</b> {{ documents.area }}<br/>
+                    <b>Descripción:</b> {{ documents.description }}<br/>
+                    
+                    {% if documents.file %}
+                        <b>Archivo:</b> <a href="/{{ documents.file }}" target="_blank">Descargar</a><br/>
+                    {% endif %}
+                </p>
+ 
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-6">
+                        <a href="{% url 'documents:documents_list' %}"  class="btn btn-light">Regresar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}

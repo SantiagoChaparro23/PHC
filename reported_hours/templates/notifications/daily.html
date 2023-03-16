@@ -1,0 +1,20 @@
+{% extends "emails/base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <p style='text-align:center'>
+        <img src="https://datcore.phc.com.co/static/images/report/report.gif" >
+    </p>
+    <p>
+        Hola, <strong>{{user.0}}</strong>
+    </p>
+    <p>
+        Te recordamos que el dia <strong>{{date}}</strong> no reportaste tiempo.  
+    </p>
+    <p>
+        Te invitamos a ponerte al dia, ingresando a <a href='https://datcore.phc.com.co/reported_hours/'>Datcore</a>
+    </p>
+    <br>
+{% endblock content %}
+

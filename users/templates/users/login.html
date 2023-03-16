@@ -1,0 +1,46 @@
+{% extends "layouts/auth.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+
+
+
+
+<div class="">
+  
+    {% comment %} <form class="form-horizontal mt-4" method='post'>   
+        {% csrf_token %}
+         {{ form|crispy }}
+      
+        <div class="form-group row mt-4">
+           
+            <div class="col-12 text-right">
+                <button class="btn btn-primary w-md waves-effect waves-light" type="submit">Ingresar</button>
+            </div>
+        </div>
+        <div class="form-group mb-0 row">
+            <div class="col-12 mt-4">
+                <a href="#" class="text-muted"><i class="mdi mdi-lock"></i> Olvido su contraseña?</a>
+            </div>
+        </div>
+    </form> {% endcomment %}
+
+    <p class='text-center'> 
+    
+        <a href='{% url 'users:microsoft_login'%}' class="btn btn-outline-secondary" type="submit">
+            <img src="{% static 'images/microsoft-logo.svg' %}" height="25" alt="logo"> 
+            Continúa con Microsoft
+        </a>
+    </p>
+    
+
+   
+
+
+</div>
+
+
+
+
+{% endblock content %}

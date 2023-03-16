@@ -1,0 +1,194 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% load format %}
+
+{% block head %}
+    <link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+     
+    <style>
+        .nowrap{
+            white-space:nowrap;
+        }
+    </style>
+{% endblock head %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Consulta de visitas de interacciones comerciales</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+            
+                <div class="">
+
+                        <form action="" class="form-inline mt-2 mb-4" method="POST">
+
+                            {% csrf_token %}
+
+                            <div class="form-group">
+
+                                <label class="">Gestor comercial:</label>
+                                {{selected_bus_man}}
+
+                                <div class="col-sm-2">
+                                    <select name="business_manager" id="business_manager" class="form-control">
+                                        {% for business_manager in business_managers %}
+
+                                            {% if business_manager.2 %} 
+                                                <option value="{{business_manager.0}}" selected >{{business_manager.1}}</option>
+                                            {% else %} 
+                                                <option value="{{business_manager.0}}">{{business_manager.1}}</option>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+
+                                <label class="">Mes:</label>
+
+                                <div class="col-sm-2">
+                                    <input type="text" name="date" value="{{year}}-{{month}}" class="dateinput form-control" required="" id="date" readonly="readonly">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+
+                                <label class="">Cliente:</label>
+                                <div class="col-sm-2">
+                                    <select name="client" id="client" class="form-control" value="0">
+                                        {% for client in clients %}
+
+                                            {% if client.2 %} 
+                                                <option value="{{client.0}}" selected>{{client.1}}</option>
+                                            {% else %} 
+                                                <option value="{{client.0}}">{{client.1}}</option>
+                                            {% endif %}
+
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>                            
+
+                            <div class="">
+                                <button type='submit' class='btn btn-primary'>Consultar</button>
+                            </div>
+                        </form>                       
+
+                </div>
+
+                <div>
+
+                    <strong>Meta mensual:</strong> {{goal_amount_of_visits}} <br>
+                    <strong>Cumplimiento de la meta:</strong> {{goal_fulfillment}} <br>
+                    <strong>Interacciones validadas:</strong> {{validated_interactions}} <br>
+                    <br>
+
+                </div>
+                
+
+                <div>
+
+                    <table id="datatable" class="table table-centered dt-responsive nowrap" style="border-collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Fecha de registro</th>
+                                <th>Fecha de visita</th>
+                                <th>Codigo PHC</th>
+                                <th>Cliente</th>
+                                <th>Tipo de interaccion</th>
+                                <th>Compromisos con el cliente</th>
+                                <th>Esta en el CRM</th>
+                                <th>Validado en el CRM</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                                <tr>
+                                    
+                                    <td>{{forloop.counter}}</td>
+                                    <td>{{result.0}}</td>
+                                    <td>{{result.1}}</td>
+                                    <td>{{result.2}}</td>
+                                    <td>{{result.3}}</td>
+                                    <td>{{result.4}}</td>
+                                    <td>{{result.5}}</td>
+
+                                    {% if result.6 == True %} <td>Si</td>
+                                    {% else %} <td>No</td>
+                                    {% endif %}
+
+                                    {% if result.7 == True %} <td>Si, encontrado</td>
+                                    {% elif result.7 == False %} <td>Si, <b>no</b> encontrado</td>
+                                    {% else %} <td>No</td>
+                                    {% endif %}
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            
+            </div>
+            
+        </div>
+        
+    </div>
+  
+</div>
+
+{% endblock content %}
+
+
+
+
+
+{% block scripts %}
+<!-- JAVASCRIPT -->
+    
+    <script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+
+    <script>
+   
+    $(document).ready(function(){
+    
+        $("#date").attr('readonly', 'readonly')
+        $("#date").datepicker({
+            autoclose:!0,
+            format: 'yyyy-mm',
+            orientation: 'bottom',
+            todayHighlight: true,
+            viewMode: "months", 
+            minViewMode: "months"
+        })
+
+    })
+    </script>
+    
+
+    {% comment %} <script>
+   $(document).ready( function () {
+    $('#myTable').DataTable({
+        
+    });
+} );
+    </script> {% endcomment %}
+{% endblock scripts %}
+
+

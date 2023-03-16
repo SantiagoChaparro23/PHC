@@ -1,0 +1,139 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block head %}
+   <style>
+    .form-control:disabled, .form-control[readonly]{background-color:#efefef !important;}
+
+   </style>  
+{% endblock head %}
+
+{% block scripts %}
+
+
+  
+{% endblock scripts %}
+
+
+{% block content %}
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Reportar horas / {{project}} - {{project.client.client}}</h4>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class='col-lg-3'></div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+
+                <h4 class="card-title text-center">Confirmación</h4>
+              
+      
+                <form method='POST' enctype="multipart/form-data">
+                    {% csrf_token %}
+                 
+                    <input name='code_id' type='hidden' value='{{ request.GET.code_id}}'>
+                    <input name='activity_id' type='hidden' value='{{activity.pk}}'>  
+                    <div class="form-group">
+                        <label>Actividad</label>
+                        <input readonly  class='form-control' value='{{activity.activity}}' />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fecha de reporte</label>
+                        <input readonly name='report_date_at' class='form-control' value='{{report_date_at}}' />
+                    </div>
+
+
+                    <div class='row'>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>Horas</label>
+                                <input name='hours' readonly class='form-control' value='{{hours}}' />
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>Minutos</label>
+                                <input name='minutes' readonly class='form-control' value='{{minutes}}' />
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                     <div class="form-group">
+                        <label>Comentarios</label>
+                        <textarea name='description' class='form-control'>{{description}}</textarea>
+                    </div>
+
+
+
+                    {% if reported %}
+                        
+                        <h5 class='text-center mt-5'>Tiempo reportado este día</h5>
+                        <div class="table-responsive">
+                            <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Actividad</th>
+                                        <th>Tiempo</th>                                     
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for reported_hours in reported %}
+                                        <tr>
+                                            <td>
+                                                {{ reported_hours.activity.activity }}
+                                            </td>
+                                            <td>
+                                                
+                                                {{ reported_hours.format_minutes }}
+                                                <small class='text-muted'> / {{reported_hours.time}} Min.<small>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>    
+
+                    {% endif %}
+
+                  
+                    <div class="form-group mt-5 text-center ">
+                        <div>
+                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1">
+                                Guardar
+                            </button>
+                            <a href='{% url 'reported_hours:reported_hours_create' %}?project={{project.pk}}' class="btn btn-light">Cancelar</a>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{% endblock content %}
+
+
+
+
+

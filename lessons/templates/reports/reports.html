@@ -1,0 +1,41 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block head %}
+{% endblock head %}
+
+{% block content %}
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="page-title-box">
+                <h4>Reportes</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Reporte general</h4>
+
+                    <form method='POST'>
+                        {% csrf_token %}
+
+                        <input value='general' name='type' type='hidden'>
+                        <input value='1' name='value' type='hidden'>
+
+                        <button class='btn btn-info' type='submit'>Generar</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+{% endblock scripts %}

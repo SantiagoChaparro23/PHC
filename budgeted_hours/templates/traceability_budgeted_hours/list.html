@@ -1,0 +1,106 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% load tz %}
+{% comment %} {% get_current_timezone as TIME_ZONE %} {% endcomment %}
+
+{% block head %}
+<!-- DataTables -->
+<link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+<!-- Responsive datatable examples -->
+<link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock head %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Trazabilidad de horas</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Lista
+                </h4>
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Tipo de servicio</th>
+                                <th>Fecha de envio</th>
+                                <!-- <th>Revisado ingeniero</th>
+                                <th>Revisado financiero</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for traceability_budgeted_hour in traceabilitybudgetedhours %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'budgeted_hours:traceability_budgeted_hours_view' traceability_budgeted_hour.pk %}">{{ traceability_budgeted_hour.budgeted_hours }}</a>
+                                    </td>
+                                    <td>
+                                        {{ traceability_budgeted_hour.budgeted_hours.service_type }}
+                                    </td>
+                                    <td>
+                                        {{ traceability_budgeted_hour.sent_at|timezone:"America/Bogota"|date:"d M Y, h:i a" }}
+                                    </td>
+                                    <!-- <td>
+                                        {{ traceability_budgeted_hour.reviewed_by_engineer|default:"" }}
+                                    </td>
+                                    <td>
+                                        {{ traceability_budgeted_hour.reviewed_by_financial|default:"" }}
+                                    </td> -->
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<!-- JAVASCRIPT -->
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+{% comment %} <script src="{% static 'libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/metismenu/metisMenu.min.js' %}"></script> {% endcomment %}
+<script src="{% static 'libs/simplebar/simplebar.min.js' %}"></script>
+<script src="{% static 'libs/node-waves/waves.min.js' %}"></script>
+<script src="{% static 'libs/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+
+<!-- Required datatable js -->
+<script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+
+<!-- Buttons examples -->
+<script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'libs/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'libs/pdfmake/build/pdfmake.min.js' %}"></script>
+<script src="{% static 'libs/pdfmake/build/vfs_fonts.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+
+<!-- Responsive examples -->
+<script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+<!-- Datatable init js -->
+<script src="{% static 'js/pages/datatables.init.js' %}"></script>
+
+<!-- App js -->
+<script src="{% static 'js/app.js' %}"></script>
+{% endblock scripts %}

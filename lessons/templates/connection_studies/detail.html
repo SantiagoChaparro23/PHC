@@ -1,0 +1,55 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Estudios de conexión</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-10">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">{{ connection_studies.budgeted_hours }}</h4>
+            </div>
+            <div class="card-body">
+
+                <p>
+                    <b>Palabras clave:</b> {{ connection_studies.title|default:"" }}<br/>
+                    <b>Fecha:</b> {{ connection_studies.created_at }}<br/>
+                    <b>Cliente:</b> {{ connection_studies.client|default:"" }}<br/>
+                    <b>Responsable:</b> {{ connection_studies.created_by.first_name }} {{ connection_studies.created_by.last_name }}<br/>
+                    <b>Zona:</b> {{ connection_studies.zone }}<br/>
+                    <b>Operador:</b> {{ connection_studies.operator }}<br/>
+                    <b>Área:</b> {{ connection_studies.area }}<br/>
+                    <b>Tipo de lección:</b> {{ connection_studies.get_lesson_type_display }}<br/>
+                    {% if connection_studies.get_lesson_type_display == 'Técnica' %}
+                        <b>Subcategoría:</b> {{ connection_studies.get_subcategory_display|default:"" }}<br/>
+                    {% endif %}
+                    <b>Descripción:</b> {{ connection_studies.description }}<br/>
+                    <b>Plan de acción propuesto:</b> {{ connection_studies.action_plan }}<br/>
+                    {% if connection_studies.file %}
+                        <b>Archivo:</b> <a href="/{{ connection_studies.file }}" target="_blank">Descargar</a><br/>
+                    {% endif %}
+                </p>
+
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-6">
+                        <a href="{% url 'lessons:connection_studies_list' %}"  class="btn btn-light">Regresar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}

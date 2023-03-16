@@ -1,0 +1,246 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block head %}
+    <link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+{% endblock head %}
+
+{% block scripts %}
+    <script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+
+    <script>
+        $(function(){
+              $("#id_date").datepicker({autoclose:!0,todayHighlight:!0})
+        })
+    </script>
+
+
+  
+{% endblock scripts %}
+
+
+{% block content %}
+
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Lecciónes aprendidas Comercial</h4>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+
+
+            <h4 class="card-header font-16 mt-0">{{commercial.name }}</h4>
+            <div class="card-body">
+
+
+                <div class="row">
+                    <div class="col-6">
+                        <p>
+                            <strong>Fecha:</strong>{{commercial.date }}<br>
+
+                            <strong>Codigo PHC:</strong> {{commercial.phc_code }} <br>
+                            <strong>RFP emitido por el cliente:</strong> {{commercial.area }}
+
+                            {% if commercial.rfp_issued_by_client == True %}
+                                <input type="checkbox" name="" value="True" checked disabled>
+                            {% else %}
+                                <input type="checkbox" name="" value="True" disabled>
+                            {% endif %}
+                            <br>
+
+                            <strong>Gestor comercial:</strong> {{commercial.business_manager.first_name}}
+                                                               {{commercial.business_manager.last_name}} <br>
+                            <strong>Cliente:</strong> {{commercial.client.client }} <br>
+                            <strong>Linea de producto:</strong> {{commercial.service_type.service_type }} <br>
+                            <strong>Participantes:</strong> 
+
+                                {% for row in comm_users %}
+                                {{row.1}} {{row.2}} <br>
+                                {% endfor %}
+                                    
+
+                            <strong>Areas relacionadas:</strong> <br>
+                                {% for row in related_areas %}
+                                {{row.1}} <br>
+                                {% endfor %}
+
+
+                        <div class="card">
+
+                            <strong>Lecciones negativas:</strong>
+                            <table id="negative_table" class="table table-bordered dt-responsive nowrap dataTable no-footer dtr-inline">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Descripcion general</th>
+                                        <th>Descripcion detallada</th>
+                                    </tr>
+                                    {% for row in negative_lessons %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ row.general }}</td>
+                                                <td>{{ row.description }}</td>
+                                            </tr>
+                                    {% endfor %}
+                                </thead>  
+                            </table>
+                        </div>
+
+                        <div class="card">
+
+                            <strong>Lecciones positivas:</strong>
+                            <table id="positive_table" class="table table-bordered dt-responsive nowrap dataTable no-footer dtr-inline">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Descripcion general</th>
+                                        <th>Descripcion detallada</th>
+                                    </tr>
+                                    {% for row in positive_lessons %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ row.general }}</td>
+                                                <td>{{ row.description }}</td>
+                                            </tr>
+                                    {% endfor %}
+                                </thead>    
+                              </tr>
+                            </table>
+                        </div>  
+
+
+                        <div class="card">
+
+                            <strong>Acciones preventivas:</strong>
+                            <table id="preventive_table" class="table table-bordered dt-responsive nowrap dataTable no-footer dtr-inline">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Descripcion</th>
+                                        <th>Lecciones</th>
+                                        <th></th>
+                                        <th></th>                                    
+                                    </tr>
+
+                                    {% for row in preventive_actions %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ row.description }}</td>
+                                                <td>
+                                                    <table class='table table-borderless'>
+                                                        <thead>
+                                                            {% for bool in row.neg_sub_table %}
+                                                                <tr>
+                                                                    <td>{{forloop.counter}}</td>
+                                                                    <td>
+                                                                        {% if bool.1 == True %}
+                                                                            <input type="checkbox" 
+                                                                                   name="" 
+                                                                                   value="True" 
+                                                                                   style="background-color:black"
+                                                                                   checked disabled>
+                                                                        {% else %}
+                                                                            <input type="checkbox" 
+                                                                                   name="" 
+                                                                                   value="True" 
+                                                                                   style="background-color:black"
+                                                                                   disabled>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </thead>
+                                                    </table>
+                                                </td>
+                                                <td>
+                                                    <table class='table table-borderless'>
+                                                        <thead>
+                                                            {% for bool in row.pos_sub_table %}
+                                                                <tr>
+                                                                    <td>{{forloop.counter}}</td>
+                                                                    <td>
+                                                                        {% if bool.1 == True %}
+                                                                            <input type="checkbox" 
+                                                                                   name="" 
+                                                                                   value="True" 
+                                                                                   style="background-color:black"
+                                                                                   checked disabled>
+                                                                        {% else %}
+                                                                            <input type="checkbox" 
+                                                                                   name="" 
+                                                                                   value="True" 
+                                                                                   style="background-color:black"
+                                                                                   disabled>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </thead>
+                                                    </table>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        
+                                    {% endfor %}
+
+                                </thead>
+                              </tr>
+                            </table> 
+                          
+                        </div>
+
+                    </p>
+                    
+                    </div>
+                    
+                </div>
+    
+            </div>
+
+            <div class="card-footer text-muted">
+
+                <div class="row">
+
+                    <div class="col-6">
+                        {% if perms.lessons.change_commercial  %}
+                            <a href="{% url 'lessons:commercial_change' commercial.pk  %}" class="btn btn-info">Modificar</a>
+                        {% endif %} 
+                         <a href='{% url 'lessons:commercial_list' %}'  class="btn btn-light">Regresar</a>
+                    </div>
+
+                    <div class="col-6 text-right">                
+                        {% if perms.lessons.delete_commercial  %}
+                            <a href="{% url 'lessons:commercial_delete' commercial.pk  %}" class="btn btn-danger">Eliminar</a>
+                        {% endif %} 
+                    </div>
+                    
+                </div>
+            </div>
+
+
+                 
+        </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+{% endblock content %}
+
+
+
+
+

@@ -1,0 +1,139 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% load format %}
+
+{% block head %}
+    <link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+     
+    <style>
+        .nowrap{
+            white-space:nowrap;
+        }
+    </style>
+{% endblock head %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Sabana</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+
+
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+            
+                <div class="row">
+                    <div class="col-md-3">
+                        <form action="" class="form-inline mt-2 mb-4">
+                            <div class="form-group">
+                                <input type="text" name="date" value="{{year}}-{{month}}" class="dateinput form-control" required="" id="date" readonly="readonly">
+                            </div>
+                            <div class="form-group ml-3">
+                                <button type='submit' class='btn btn-primary'>Consultar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            
+
+            
+                    <div class="table-responsive " >
+                        <table id="myTable" class="table table-sm table-hover table-bordered dt-responsive nowrap" style="font-size:12px; border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead >
+                                <tr>
+                                    <th  class='nowrap' style="">Fecha reporte</th>
+                                    <th></th>
+                                    {% for user in users %}
+                                        <th  class='nowrap'>
+                                            <a href="{% url 'reported_hours:user_report' user.0 %}">
+                                            {{user.1}}
+                                            </a>
+                                        </th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody  class='text-center'>
+                                {% for date in dates %}
+                                    {% with forloop.counter0 as date_index %}
+                                        <tr class='{{date|get_day_of_week_index}}'>
+                                            <td class='nowrap'>{{date}}</td>
+                                            <td class='nowrap'>{{date|get_day_of_week}}</td>
+                                                {% for user in users %}
+                                                    <td>{{user|get_hour:date_index}}</td>
+                                                {% endfor %}
+
+                                            </td>
+                                        </tr>
+                                    {% endwith %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+            
+            
+            </div>
+            
+        </div>
+        
+        
+    </div>
+
+
+    
+    
+
+  
+</div>
+
+
+
+
+
+{% endblock content %}
+
+
+
+
+
+{% block scripts %}
+<!-- JAVASCRIPT -->
+    
+    <script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+
+    <script>
+   
+    $(document).ready(function(){
+    
+        $("#date").attr('readonly', 'readonly')
+        $("#date").datepicker({
+            autoclose:!0,
+            format: 'yyyy-mm',
+            orientation: 'bottom',
+            todayHighlight: true,
+            viewMode: "months", 
+            minViewMode: "months"
+        })
+
+    })
+    </script>
+    
+
+    {% comment %} <script>
+   $(document).ready( function () {
+    $('#myTable').DataTable({
+        
+    });
+} );
+    </script> {% endcomment %}
+{% endblock scripts %}
+
+

@@ -1,0 +1,190 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% comment %} {% block head %}
+    <link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+{% endblock head %} {% endcomment %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Estudios de mercado</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Crear</h4>
+                <p class="card-title-desc">Ingrese la información que desea registrar</p>
+
+                <form method='POST' enctype="multipart/form-data">
+
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="form-group mb-0 mt-5">
+                        <div>
+                            <button type="submit" class="btn btn-primary float-right">Guardar</button>
+                            <a href="{% url 'lessons:market_studies_list' %}" class="btn btn-light">Regresar</a>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}
+
+{% block scripts %}
+    {% comment %} <script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script> {% endcomment %}
+
+    <script>
+        $(function(){
+            {% comment %} $('#id_created_at').datepicker({
+                autoclose:!0,
+                format: 'dd/mm/yyyy',
+                todayHighlight:!0
+            }).attr('readonly', 'false')
+
+            $('#id_created_at').datepicker('setDate', '{% now "d/m/Y" %}') {% endcomment %}
+
+            $('#div_id_subcategory').hide()
+
+            $('#id_lesson_type').change(function(){
+                let lesson_type = $('#id_lesson_type').find(':selected').text()
+
+                if(lesson_type == 'Técnica'){
+                    $('#div_id_subcategory').show()
+                }else{
+                    $('#div_id_subcategory').hide()
+                }
+            })
+
+            // $("#id_other").prop('disabled', true);
+
+            {% comment %} var id_study_type_default =  $('#id_study_type').find(":selected").val()
+            var id_information_type_default =  $('#id_information_type').find(":selected").val()
+            var id_characteristic_default =  $('#id_characteristic').find(":selected").val()
+           
+       
+            resetSelect('#id_information_type')
+            resetSelect('#id_characteristic')
+
+
+            function resetSelect(selector){
+                $(selector).empty()
+            }
+
+
+
+            function get_information_types(study_type, first){
+
+                $("#id_other").val('')
+                $("#id_other").prop('disabled', true);
+
+                if(!study_type){
+                    var first =  $('#id_study_type').find(":selected").val()
+                    study_type = first
+                }
+
+                var url = '{% url 'lessons:information_types' %}'
+                
+             
+                $.get( url, { study_type } ).done(function( {information_types, characteristics} ) {
+                  
+                    resetSelect('#id_information_type')
+                    resetSelect('#id_characteristic')
+
+                    information_types.forEach(element => {
+                        $('#id_information_type').append($("<option />").val(element.id).text(element.name));
+                    });   
+                    characteristics.forEach(element => {
+                        $('#id_characteristic').append($("<option />").val(element.id).text(element.name));
+                    });     
+
+
+                    if(first){
+                        $('#id_information_type').val(id_information_type_default)
+
+                        get_characteristics(id_information_type_default, true)
+                        
+                    } 
+                });
+                
+            }
+
+            get_information_types(null, true)
+
+
+            function get_characteristics(information_type, first){
+
+                $("#id_other").val('')
+                $("#id_other").prop('disabled', true);
+
+                var url = '{% url 'lessons:characteristics' %}'
+
+                resetSelect('#id_characteristic')
+
+                if (!information_type) return
+             
+                $.get( url, { information_type } ).done(function( {characteristics} ) {
+                
+                    characteristics.forEach(element => {
+                        $('#id_characteristic').append($("<option />").val(element.id).text(element.name));
+                    });      
+
+                    if(first && id_characteristic_default){
+                        $('#id_characteristic').val(id_characteristic_default)
+                        check_other_field()
+                    }
+                });
+
+            }
+        
+            $('#id_information_type').change(function(){
+                var information_type = $(this).val()
+                get_characteristics(information_type, false)
+            })
+
+
+            $('#id_study_type').change(function(){
+                var study_type = $(this).val()
+                get_information_types(study_type, false)
+            })
+
+
+
+            function check_other_field(){
+                
+                var characteristic = $('#id_characteristic').find(":selected").text()
+                console.log(characteristic)
+                if(characteristic == 'Otro'){
+                    
+                    $("#id_other").prop('disabled', false);
+                   // $("#id_other").prop('required', true);
+                }else{
+                    $("#id_other").prop('disabled', true);
+                  //  $("#id_other").prop('required', false);
+                }
+            }
+
+            $('#id_characteristic').change(function(){
+               check_other_field()
+                
+            }) {% endcomment %}
+
+            
+
+         })
+    </script>
+{% endblock scripts %}

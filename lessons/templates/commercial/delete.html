@@ -1,0 +1,79 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block head %}
+    <link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+{% endblock head %}
+
+{% block scripts %}
+    <script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+
+    <script>
+        $(function(){
+              $("#id_date").datepicker({autoclose:!0,todayHighlight:!0})
+        })
+    </script>
+
+
+  
+{% endblock scripts %}
+
+
+{% block content %}
+
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Lecciónes aprendidas Comercial</h4>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+
+                <h4 class="card-title">Eliminar</h4>
+            
+                <form method='post'>
+
+                    {% csrf_token %}
+                    <p>Realmente desea eliminar este elemento?</p>
+                    <p>
+                        Nombre: <strong>{{commercial.name }}</strong> <br>
+                        Codigo: <strong>{{commercial.phc_code}}</strong>
+                    </p>
+
+                    <div class="form-group mb-0">
+                        <div>
+                            <button type="submit" class="btn btn-danger waves-effect waves-light mr-1">
+                                Eliminar
+                            </button>
+                             <a href='{% url 'lessons:commercial_list' %}'  class="btn btn-light">Regresar</a>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+
+</div>
+
+
+
+
+{% endblock content %}
+
+
+
+
+

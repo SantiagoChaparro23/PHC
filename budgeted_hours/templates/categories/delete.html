@@ -1,0 +1,54 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>{% trans "Activities" %}</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">{% trans "Delete" %}</h4>
+
+                <form method='POST'>
+
+                    {% csrf_token %}
+
+                    <p>Realmente desea eliminar este elemento?</p>
+                    <p>
+                        Tipo estudio: <strong>
+                            {% if activities.study_type == 1 %}Análisis energético{% endif %}
+                            {% if activities.study_type == 2 %}Asesoría comercial{% endif %}
+                            {% if activities.study_type == 3 %}Estudio de conexión{% endif %}
+                            {% if activities.study_type == 4 %}Análisis energético{% endif %}
+                            {% if activities.study_type == 5 %}Análisis energético{% endif %}
+                        </strong><br>
+                        Actividad: <strong>{{ activities.activity }}</strong><br>
+                        Descripción: <strong>{{ activities.description|default:"" }}</strong>
+                    </p>
+
+                    <div class="form-group mb-0">
+                        <div>
+                            <button type="submit" class="btn btn-danger waves-effect waves-light mr-1">
+                                {% trans "Delete" %}
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}

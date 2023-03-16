@@ -1,0 +1,152 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% comment %} {% block head %}
+    <link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+{% endblock head %} {% endcomment %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Estudios de conexión</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Crear</h4>
+
+                <form method='POST' enctype="multipart/form-data">
+
+                    {% csrf_token %}
+                    {{form.title|as_crispy_field}}
+                    {{form.created_at|as_crispy_field}}
+                    {{form.budgeted_hours|as_crispy_field}}
+                    {{form.client|as_crispy_field}}
+                    {{form.created_by|as_crispy_field}}
+
+                    <div class='row'>
+                        <div class='col-md-4'>{{form.zone|as_crispy_field}}</div>
+                        <div class='col-md-4'>{{form.operator|as_crispy_field}}</div>
+                        <div class='col-md-4'>{{form.area|as_crispy_field}}</div>
+                    </div>
+
+                    {{form.lesson_type|as_crispy_field}}
+                    {{form.subcategory|as_crispy_field}}
+                    {{form.description|as_crispy_field}}
+                    {{form.action_plan|as_crispy_field}}
+                    {{form.file|as_crispy_field}}
+
+                    <div class="form-group mb-0">
+                        <div>
+                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1">Guardar</button>
+                            <a href="{% url 'lessons:connection_studies_list' %}"  class="btn btn-light">Regresar</a>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}
+
+{% block scripts %}
+    {% comment %} <script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script> {% endcomment %}
+
+    <script>
+        $(function(){
+            {% comment %} $("#id_created_at").datepicker({
+                autoclose:!0,
+                format: 'dd/mm/yyyy',
+                todayHighlight:!0
+            }).attr('readonly', 'false') {% endcomment %}
+
+            const resetSelect = (select) => {
+                $(select).empty()
+            }
+
+            resetSelect('#id_operator')
+            resetSelect('#id_area')
+
+            const getOperators = (zone_id) => {
+
+                const URL = '{% url "lessons:operatos" %}'
+
+                $.get(URL, {zone_id}).done(function({operators, areas}) {
+
+                    resetSelect('#id_operator')
+                    resetSelect('#id_area')
+
+                    operators.forEach(element => {
+                        $('#id_operator').append($("<option />").val(element.id).text(element.name))
+                    })
+
+                    areas.forEach(element => {
+                        $('#id_area').append($("<option />").val(element.id).text(element.name))
+                    })
+
+                })
+            }
+
+            const getAreas = (operator_id) => {
+
+                const URL = '{% url "lessons:areas" %}'
+
+                resetSelect('#id_area')
+
+                $.get(URL, {operator_id}).done(function({areas}) {
+
+                    areas.forEach(element => {
+                        $('#id_area').append($("<option />").val(element.id).text(element.name))
+                    })
+
+                })
+            }
+
+            $('#id_zone').change(function(){
+                let zone_id = $(this).val()
+
+                if(zone_id){
+                    getOperators(zone_id)
+
+                }else{
+                    resetSelect('#id_operator')
+                    resetSelect('#id_area')
+
+                }
+            })
+
+            $('#id_operator').change(function(){
+                let operator_id = $(this).val()
+
+                if(operator_id){
+                    getAreas(operator_id)
+                }
+            })
+
+            $('#div_id_subcategory').hide()
+
+            $('#id_lesson_type').change(function(){
+                let lesson_type = $('#id_lesson_type').find(':selected').text()
+
+                if(lesson_type == 'Técnica'){
+                    $('#div_id_subcategory').show()
+                }else{
+                    $('#div_id_subcategory').hide()
+                }
+            })
+
+        })
+    </script>
+{% endblock scripts %}

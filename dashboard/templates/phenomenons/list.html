@@ -1,0 +1,53 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% block content %}
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Fenómenos</h4>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+  
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Listado
+                    <a class='float-right btn btn-sm btn-success' href="{% url 'dashboard:phenomenon_create'  %}">Agregar</a>                
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-centered table-vertical table-nowrap mb-1">
+                        <tbody>
+                            {% for phenomenon in phenomenons %}
+                                <tr>
+                                    <td width="200">
+                                        <a href="{% url 'dashboard:phenomenon_view' phenomenon.pk  %}"> {{ phenomenon.date|date:'d F, Y' }}</a>
+                                    </td>
+                                    <td>
+                                        {{phenomenon.get_phenomenon_display}}
+                                    </td>
+                                    <td class='text-right'>
+                                        <a href="{% url 'dashboard:phenomenon_delete' phenomenon.pk  %}" class="btn btn-danger btn-sm waves-effect waves-light">Eliminar</a>
+                                        <a href="{% url 'dashboard:phenomenon_view' phenomenon.pk  %}" class="btn btn-secondary btn-sm waves-effect waves-light">Editar</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock content %}
+

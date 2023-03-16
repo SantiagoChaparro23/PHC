@@ -1,0 +1,201 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block head %}
+     <link href="{% static 'libs/select2/css/select2.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock head %}
+
+
+
+
+
+
+{% block content %}
+
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="page-title-box">
+                <h4>Reportar horas</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+
+                    <h4 class="card-title">Reporte por usuario</h4>
+
+                    <form method='post' autocomplete="off">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <input name='dates' autoComplete="off" class="form-control">
+                        </div>
+                        <input value='user' name='type' type='hidden'>
+                        <div class="form-group">
+                         <label>Usuario</label>
+                            <select required name="value[]" id="" multiple="multiple" class="select2 form-control">
+                                {% for user in users %}
+                                    <option value="{{user.pk}}"> {{user.first_name}} {{user.last_name}} - {{user.email}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <button class='btn btn-info' type='submit'>Consultar</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+  
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+
+                    <h4 class="card-title">Reporte por proyecto</h4>
+
+
+
+                    <form method='post'  >
+                        {% csrf_token %}
+                        <input value='code' name='type' type='hidden'>
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <input name='dates' class="form-control" autoComplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label>Proyecto</label>
+                            <select  required name="value[]" id="" multiple="multiple" class="select2 form-control">
+                                {% for project in projects %}
+                                    <option value="{{project.id}}">{{project.code}} - {{project.client.client}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                            <button class='btn btn-info' type='submit'>Consultar</button>
+                    </form>
+
+                
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+
+                    <h4 class="card-title">Reporte por cliente</h4>
+                 
+
+
+                    <form method='post'  >
+                        {% csrf_token %}
+                        <input value='client' name='type' type='hidden'>
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <input name='dates' autoComplete="off" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Cliente</label>
+                            <select required name="value[]" id="" multiple="multiple" class="select2 form-control" >
+                                {% for client in clients %}
+                                    <option value="{{client.id}}">{{client.client}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                            <button class='btn btn-info' type='submit'>Consultar</button>
+                    </form>
+
+                
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+
+                    <h4 class="card-title">Reporte general</h4>
+                 
+
+
+                    <form method='post'  >
+                        {% csrf_token %}
+                        <input value='general' name='type' type='hidden'>
+                        <input value='1' name='value' type='hidden'>
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <input name='dates' autoComplete="off" class="form-control">
+                        </div>
+                      
+                            <button class='btn btn-info' type='submit'>Consultar</button>
+                    </form>
+
+                
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+
+{% endblock content %}
+
+
+
+
+
+{% block scripts %}
+<!-- JAVASCRIPT -->
+    <script src="{% static 'libs/select2/js/select2.min.js' %}"></script>
+    
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script>
+   
+    $(document).ready(function(){
+        $(".select2").select2()
+        $('input[name="dates"]').daterangepicker({
+            autoUpdateInput: false,
+        
+            locale:{
+                 format:"Y-MM-DD",
+                 cancelLabel: 'Limpiar'
+            }
+             
+         });
+
+        $('input[name="dates"]').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        $('input[name="dates"]').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+    })
+    </script>
+{% endblock scripts %}
+
+

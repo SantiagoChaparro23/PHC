@@ -1,0 +1,53 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>{% trans "Metrics" %}</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    {% trans "List" %}
+                    <a class='float-right btn btn-sm btn-success' href="{% url 'dashboard:metric_create' %}">{% trans "Add" %}</a>
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-centered table-vertical table-nowrap mb-1">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Metric" %}</th>
+                                <th>{% trans "Format" %}</th>
+                                <th class="text-right">{% trans "Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for metric in metrics %}
+                                <tr>
+                                    <td width="200">
+                                        <a href="{% url 'dashboard:metric_view' metric.pk %}"> {{ metric.metric }}</a>
+                                    </td>
+                                    <td>
+                                        {{ metric.format }}
+                                    </td>
+                                    <td class='text-right'>
+                                        <a href="{% url 'dashboard:metric_delete' metric.pk %}" class="btn btn-danger btn-sm waves-effect waves-light">{% trans "Delete" %}</a>
+                                        <a href="{% url 'dashboard:metric_view' metric.pk  %}" class="btn btn-secondary btn-sm waves-effect waves-light">{% trans "Edit" %}</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

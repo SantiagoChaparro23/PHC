@@ -1,0 +1,60 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block head %}
+{% endblock head %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Días causados</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Lista
+                    <a class='float-right btn btn-success' href="{% url 'vacations:days_caused_create' %}">Crear</a>
+                </h4>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Colaborador</th>
+                                <th>Días causados</th>
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for element in days_caused %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'vacations:days_caused_change' element.pk %}"> {{ element.collaborator }}</a>
+                                    </td>
+                                    <td>
+                                        {{ element.days_caused }}
+                                    </td>
+                                    <td class='text-right'>
+                                        <a href="{% url 'vacations:days_caused_change' element.pk  %}" class="btn btn-warning btn-sm waves-effect waves-light">Editar</a>
+                                        <a href="{% url 'vacations:days_caused_delete' element.pk %}" class="btn btn-danger btn-sm waves-effect waves-light">Eliminar</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{% endblock scripts %}

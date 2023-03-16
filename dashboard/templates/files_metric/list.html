@@ -1,0 +1,69 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load tz %}
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Datos de archivo de metrica</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    {% trans "List" %}
+                    <a class='float-right btn btn-sm btn-success' href="{% url 'dashboard:files_metrics_create' %}">{% trans "Add" %}</a>
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-centered table-vertical table-nowrap mb-1">
+                        <tbody>
+                            {% for url_file_metric in urls_files_metrics %}
+                                <tr>
+                                    <td width="200">
+                                        <a href="{% url 'dashboard:files_metrics_view' url_file_metric.pk %}"> {{ url_file_metric.url_file }}</a>
+                                    </td>
+                                    <td>
+                                        {{ url_file_metric.year_file }}                          
+                                    </td>                                                                        
+                                    <td>
+                                        {{ url_file_metric.get_period_display }}                                       
+                                    </td>  
+                                    
+                                    <td>
+                                        {{ url_file_metric.last_update|timezone:"America/Bogota"|date:"d M Y, h:i a" }}     
+                                        {% if url_file_metric.processing_time %}
+                                            <br>
+                                            <span>{{ url_file_metric.seconds }} Seg.   </span>             
+                                        {% endif %}
+                                                                         
+                                    </td>    
+
+
+                                    <td class='text-right'>
+
+
+                                       
+                                       
+                                        <a href="{% url 'dashboard:files_metrics_delete' url_file_metric.pk %}" class="btn btn-danger btn-sm waves-effect waves-light">{% trans "Delete" %}</a>
+                                        <a href="{% url 'dashboard:files_metrics_view' url_file_metric.pk  %}" class="btn btn-secondary btn-sm waves-effect waves-light">{% trans "Edit" %}</a>
+                                        <a class="btn btn-primary btn-sm  waves-effect waves-light" href='{% url 'dashboard:files_metrics_process' url_file_metric.pk %}'>Procesar</a>
+                                     
+
+                                     
+
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

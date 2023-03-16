@@ -1,0 +1,131 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block head %}
+
+<link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+ 
+<style>
+    .nowrap{
+        white-space:nowrap;
+    }
+</style>
+
+
+{% endblock head %}
+
+
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Interaccion comercial</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Lista
+                    <a class='float-right btn btn-success' href="{% url 'record_business_interactions:visit_record_create' %}">Crear</a>
+                </h4>
+
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-sm table-hover table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Fecha de visita</th>
+                                <th>Gestor comercial</th>
+                                <th>Cliente</th>
+                                <th>Tipo de interaccion</th>
+                                <th>Compromisos con el cliente</th>
+                                <th>Esta en el CRM</th>
+                                <th>Validado en el CRM</th>                                
+                                
+                                <th>Codigo PHC</th>
+                                <th>Fecha de registro</th>
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class='nowrap'>
+                            {% for vst_rcrd in visit_record %}
+                                <tr>
+                                    <td >{{ vst_rcrd.date_visit }}</td>
+                                    <td>{{ vst_rcrd.user.first_name }} {{ vst_rcrd.user.last_name }}</td>    
+                                    <td>{{ vst_rcrd.client }}</td>
+                                    <td>{{ vst_rcrd.interaction_type.name }}</td>
+                                    <td>{{ vst_rcrd.customer_commitments }}</td>
+
+                                    {% if vst_rcrd.is_in_crm == True %} <td>Si</td>
+                                    {% else %} <td>No</td>
+                                    {% endif %}
+
+                                    {% if vst_rcrd.validated_in_crm == True %} <td>Si, encontrado</td>
+                                    {% elif vst_rcrd.validated_in_crm == False %} <td>Si, <b>no</b> encontrado</td>
+                                    {% else %} <td>No</td>
+                                    {% endif %}
+                                    
+                                    <td>{{ vst_rcrd.phc_code }}</td>
+                                    <td>{{ vst_rcrd.date_record }}</td>
+                                    
+                                    <td class='text-right'>
+                                        {% if perms.record_business_interactions.change_visitrecord  %}
+                                            <a href="{% url 'record_business_interactions:visit_record_change' vst_rcrd.pk  %}" class="btn btn-warning btn-sm waves-effect waves-light">Editar</a>
+                                        {% endif %} 
+
+                                        {% if perms.record_business_interactions.delete_visitrecord  %}
+                                            <a href="{% url 'record_business_interactions:visit_record_delete' vst_rcrd.pk %}" class="btn btn-danger btn-sm waves-effect waves-light">Eliminar</a>
+                                        {% endif %}
+
+                                        {% if perms.record_business_interactions.change_visitrecord_validate  %}
+                                            <a href="{% url 'record_business_interactions:visit_record_validate' vst_rcrd.pk %}" class="btn btn-success btn-sm waves-effect waves-light">Validar</a>
+                                        {% endif %}                                        
+                                        
+                                    </td> 
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if page_obj.has_previous %}
+                            <a href="?page=1">&laquo; Primera</a>
+                            <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                        {% endif %}
+
+                        <span class="current">
+                            Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+                        </span>
+
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}">Ultima &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<!-- JAVASCRIPT -->
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'libs/simplebar/simplebar.min.js' %}"></script>
+<script src="{% static 'libs/node-waves/waves.min.js' %}"></script>
+<script src="{% static 'libs/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+
+<!-- App js -->
+<script src="{% static 'js/app.js' %}"></script>
+{% endblock scripts %}

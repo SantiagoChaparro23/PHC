@@ -1,0 +1,68 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% load tz %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Solicitud</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-10">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">{{ request.request_completed|yesno:"Aceptada,Rechazada,Pendiente" }}</h4>
+            </div>
+            <div class="card-body">
+                <span class="float-right">
+                    Fecha de inicio: <b>{{ request.start_date_vacations }}</b><br/>
+                    Fecha de fin: <b>{{ request.end_date_vacations }}</b>
+                </span>
+
+                <p>
+                    Colaborador: <b>{{ request.collaborator }}</b><br/>
+                </p>
+
+                <p>
+                    Líder: <b>{{ request.leader }}</b><br/>
+                    Estado: <b>{{ request.accepted_leader|yesno:"Aceptada,Rechazada,Pendiente" }}, <a href="{% url 'vacations:requests_leader_change' request.pk %}">Click para cambiar</a></b><br/>
+                    Modificado el: <b>{{ request.date_leader|default:"" }}</b><br/>
+                </p>
+                <p>
+                    Gerencia: <b>{{ request.final_acceptor }}</b><br/>
+                    Estado: <b>{{ request.accepted_final_acceptor|yesno:"Aceptada,Rechazada,Pendiente" }}, <a href="{% url 'vacations:requests_final_acceptor_change' request.pk %}">Click para cambiar</a></b><br/>
+                    Modificado el: <b>{{ request.date_final_acceptor|default:"" }}</b><br/>
+                </p>
+                <p>
+                    Días calendario: <b>{{ request.calendar_days_taken }}</b><br/>
+                    Días hábiles: <b>{{ request.business_days_taken }}</b><br/>
+                </p>
+                <p>
+                    Liquidación: <b>{{ request.accepted_liquidation|yesno:"Aceptada,Rechazada,Pendiente" }}, <a href="{% url 'vacations:requests_liquidation_change' request.pk %}">Click para cambiar</a></b><br/>
+                </p>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-6">
+                        <a href="{% url 'vacations:request_savanna_list' %}"  class="btn btn-light">Regresar</a>
+                        <a href="{% url 'vacations:liquidation' request.pk %}"  class="btn btn-info">Generar liquidación</a>
+                        <a href="{% url 'vacations:requests_files_list' request.pk %}"  class="btn btn-info">Archivo</a>
+                    </div>
+                    <div class="col-6 text-right">
+                        <a href="{% url 'vacations:requests_change' request.pk  %}" class="btn btn-warning">Editar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}

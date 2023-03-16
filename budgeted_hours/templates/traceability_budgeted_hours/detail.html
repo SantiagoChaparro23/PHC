@@ -1,0 +1,53 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% load tz %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Trazabilidad de hora</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-10">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">{{ traceabilitybudgetedhours }} - {{ traceabilitybudgetedhours.budgeted_hours.service_type }} <span class="float-right">{{ traceabilitybudgetedhours.sent_at|timezone:"America/Bogota"|date:"d M Y, h:i a" }}</span></h4>
+            </div>
+            <div class="card-body">
+
+                <ol class="activity-feed mb-0">
+                    {% for traceability in traceability_history %}
+                        <li class="feed-item">
+                            <div class="feed-item-list">
+                                    <span class="date">{{ traceability.reviewed_at|timezone:"America/Bogota"|date:"d M Y, h:i a" }}</span>
+                                    <span class="activity-text">{{ traceability.reviewed_by }}</span><br/>
+                                    <span class="activity-text">{{ traceability.get_stages_display }}</span>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ol>
+
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-6">
+                        <a href="{% url 'budgeted_hours:traceability_budgeted_hours_list' %}"  class="btn btn-light">Regresar</a>
+                    </div>
+                    <div class="col-6 text-right">
+                        <a href="{% url 'budgeted_hours:budgeted_hours_view' traceabilitybudgetedhours.budgeted_hours.pk  %}" class="btn btn-info">Horas presupuestadas</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}

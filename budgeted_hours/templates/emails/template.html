@@ -1,0 +1,18 @@
+{% extends "emails/base.html" %}
+{% load static %}
+
+{% block content %}
+    <p style="text-align: center;">
+        <b>Código: </b>{{ budgeted_hours }}<br/>
+        <b>Cliente: </b>{{ budgeted_hours.client }}<br/>
+        <b>Tipo de servicio: </b>{{ budgeted_hours.service_type }}<br/>
+        <b>Estado: </b>{{ budgeted_hours.get_state_display }}<br/>
+        <b>Etapa: </b>{{ budgeted_hours.get_stages_display }}<br/>
+        <b>Título: </b>{{ budgeted_hours.title }}<br/>
+        <b>Fecha comprometida de envio de propuesta: </b>{{ budgeted_hours.compromise_delivery_at }}<br/>
+
+        <br/><b>Tu participación es clave para sacar este negocio adelante, contamos con tu aporte y compromiso para entregar a tiempo esta propuesta.</b><br/>
+
+        <a href="{{ URL_SITE }}/budgeted_hours/budgeted_hours/{{ budgeted_hours.id }}" style="text-decoration: none;">Ver en el navegador</a>
+    </p>
+{% endblock content %}

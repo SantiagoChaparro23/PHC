@@ -1,0 +1,271 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block head %}
+     <link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+     <link href="{% static 'libs/c3/c3.min.css' %}" rel="stylesheet">
+     {% comment %} <link href="css/jquery.timesetter.css" rel="stylesheet"> {% endcomment %}
+       
+{% endblock head %}
+
+{% block scripts %}
+
+ <script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+ 
+    <script src="{% static 'libs/d3/d3.min.js' %}"></script>
+    <script src="{% static 'libs/c3/c3.min.js' %}"></script>
+    <script src="{% static 'libs/timesetter/timesetter.js' %}"></script>
+    <script>
+        $(function(){
+
+            $("#id_report_date_at").datepicker({
+                autoclose:!0,
+                format: 'yyyy-mm-dd',
+                orientation: 'bottom',
+                todayHighlight: true,
+            })
+             
+            $("#id_report_date_at").attr('readonly', 'readonly')
+
+
+            var activity = '{{request.POST.activity_id}}'
+
+            if(activity){
+                console.log(activity)
+                $("#id_activity").val(activity);
+            }
+
+
+            c3.generate({
+                bindto: "#donut-chart",
+                data: {
+                    columns: [
+                        ["Horas Reportadas", {{total_reported_hours}}],
+                        ["Horas Presupuestadas", {{total_budgeted_hours}}],
+                      
+                    ],
+                    type: "donut",
+                },
+                donut: { title: "Execución", width: 30, label: { show: !1 } },
+                color: { pattern: ["#f0f1f4", "#7a6fbe", "#28bbe3", "#2f8ee0"] },
+            })
+            
+        
+
+        })
+    </script>
+
+
+
+  
+{% endblock scripts %}
+
+
+{% block content %}
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Reportar horas / {{project}} - {{project.client.client}}</h4>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+
+                <h4 class="card-title">Reportar tiempo</h4>
+              
+      
+                <form method='GET'  action='{% url 'reported_hours:reported_hours_confirmation' %}'  enctype="multipart/form-data">
+                    {% comment %} {% csrf_token %} {% endcomment %}
+                    <input name='code_id' type='hidden' value='{{ request.GET.project}}'>
+                    <div id="div_id_activity" class="form-group">
+                        
+                        <label for="id_activity" class=" requiredField">
+                            Actividad<span class="asteriskField">*</span>
+                        </label>
+                         <div class="">
+                            <select name="activity_id" class="select form-control" required="" id="id_activity">
+                                {% for activity in activities %}
+                                    <option value='{{activity.activity_id}}'>{{activity.activity.activity|capfirst}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+            
+                    </div>
+
+                     {{form.report_date_at|as_crispy_field}}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                             {{form.hours|as_crispy_field}}
+                        </div>
+                        <div class="col-md-6">
+                            {{form.minutes|as_crispy_field}}
+                        </div>
+                    </div>
+
+                    {{form.description|as_crispy_field}}
+
+                    <div class="form-group mb-0">
+                        <div>
+                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1">
+                                Guardar
+                            </button>
+                            <a href='{% url 'reported_hours:reported_hours_list' %}'  class="btn btn-light">Regresar</a>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    
+   
+                
+
+     <div class="col-lg-6">
+        <div class="card m-b-20">
+            <div class="card-body">
+
+             
+
+                <div class="row text-center mt-4">
+                    <div class="col-sm-4">
+                        <h5 class="mb-0 font-size-20">{{total_reported_hours|floatformat:2}} Horas</h5>
+                        <p class="text-muted">Reportado</p>
+                    </div>
+                    <div class="col-sm-4">
+                        <h5 class="mb-0 font-size-20">{{total_budgeted_hours}} Horas</h5>
+                        <p class="text-muted"> Presupuestado</p>
+                    </div>
+                    <div class="col-sm-4">
+                        <h5 class="mb-0 font-size-20">{{execution|floatformat:2}} %</h5>
+                        <p class="text-muted">Execución</p>
+                    </div>
+                </div>
+
+                <div id="donut-chart" dir="ltr"></div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+
+
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                   Horas reportadas del proyecto/   <a href='{% url 'budgeted_hours:budgeted_hours_view' project.pk %}'>  {{project}} - {{project.client.client}} </a> 
+                   
+
+                    <form method='post' action='{% url 'reported_hours:reported_hours_reports' %}' class='form-inline float-right'>
+                        {% csrf_token %}
+                        <input value='code' name='type' type='hidden'>
+                        <input value='{{project.id}}' name='value' type='hidden'>
+                        <button class='btn btn-info' type='submit'>Descargar</button>
+                    </form> 
+
+
+                </h4>
+
+
+               
+
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Fecha reporte</th>
+                                <th>Código</th>
+                                <th>Actividad</th>
+                                <th>Tiempo</th>
+                                <th>Usuario</th>
+                                {% comment %} <th>Creado</th> {% endcomment %}
+                                <th class="text-right"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reported_hours in page.object_list %}
+                                <tr>
+                                    <td>
+                                            {{ reported_hours.report_date_at|date:"Y-m-d" }}
+                                    </td>
+                                    <td>
+                                        {{ reported_hours }}
+                                    </td>
+                                    <td>
+                                        {{ reported_hours.activity.activity }}
+                                    </td>
+                                    <td>
+                                        
+                                        {{ reported_hours.format_minutes }}
+                                        <small class='text-muted'> / {{reported_hours.time}} Min.<small>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'reported_hours:user_report'  reported_hours.user.id %}">
+                                        {{ reported_hours.user.first_name }} {{ reported_hours.user.last_name }}
+                                        </a>
+                                    </td>
+                                    
+                                    <td class='text-right'>
+                                        {% if perms.reported_hours.delete_reportedhours %}
+                                            <a onclick="if (confirm('Esta seguro de eliminar este reporte?')){return true;}else{event.stopPropagation(); event.preventDefault();};"href="{% url 'reported_hours:reported_hours_delete' reported_hours.pk %}" class="btn btn-danger btn-sm waves-effect waves-light">Eliminar</a> 
+                                        {% endif %}  
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="row">     
+                        <div class="col-sm-12 col-md-7">
+                            <div class="dataTables_paginate paging_simple_numbers " id="">
+                                <ul class="pagination">
+                                    
+                                    {% if page.has_previous %}
+                                        <li class="paginate_button page-item previous" id="datatable_previous">
+                                            <a href="{% url 'reported_hours:reported_hours_create' %}?project={{project.pk}}&page={{page.previous_page_number}}" aria-controls="datatable" data-dt-idx="0" tabindex="0" class="page-link">Anterior</a>
+                                        </li>   
+                                    {% endif %}
+                                    
+                                
+                                    {% if page.has_next %}
+                                        <li class="paginate_button page-item next" id="datatable_next">
+                                            <a href="{% url 'reported_hours:reported_hours_create' %}?project={{project.pk}}&page={{page.next_page_number}}" aria-controls="datatable" data-dt-idx="7" tabindex="0" class="page-link">Siguiente</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                      
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}
+
+
+
+
+

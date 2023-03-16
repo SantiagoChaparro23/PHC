@@ -1,0 +1,10 @@
+{% extends "emails/base.html" %}
+{% load static %}
+
+{% block content %}
+    <p style="text-align: center;">
+        {{ message }} <br>
+
+        <a href="{{ URL_SITE }}/vacations/requests/savanna" style="text-decoration: none;">Ver en el navegador</a>
+    </p>
+{% endblock content %}

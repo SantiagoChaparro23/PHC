@@ -1,0 +1,476 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% load tz %}
+{% comment %} {% load humanize %} {% endcomment %}
+{% comment %} {% load l10n %} {% endcomment %}
+
+{% block head %}
+<link href="{% static 'libs/select2/css/select2.min.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+{% comment %} <link href="{% static 'libs/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css' %}" rel="stylesheet">
+<link href="{% static 'libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css' %}" rel="stylesheet" /> {% endcomment %}
+{% endblock head %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Horas presupuestadas</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Editar</h4>
+                <p class="card-title-desc">Actualice las horas presupuestadas</p>
+
+                <form method="POST">
+
+                    {% csrf_token %}
+                    <div>
+                        <span>{% if reviewed_by %} <b>Ultima revisión por:</b> {{ reviewed_by.reviewed_by }} {% endif %}</span>
+                        <span class="float-right">
+                            <b>Creado:</b> {{ budgeted_hours.created_at|date:"d M Y" }}
+                            <b>Por:</b>
+                            {% for value, text in form.created_by.field.choices %}
+                                {% if value == form.created_by.value %}
+                                    {{ text }}
+                                    <input type="hidden" name="created_by" value="{{ value }}">
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    <hr style="clear: both;"/>
+
+                    {{ form.code|as_crispy_field }}
+                    {{ form.client|as_crispy_field }}
+                    {{ form.service_type|as_crispy_field }}
+                    {{ form.start_at|as_crispy_field }}
+                    {{ form.compromise_delivery_at|as_crispy_field }}
+
+                    {% comment %} {{ user.groups.all.0.name }}
+                    {% if user.groups.all.0.name == "Administrativo" %}
+                        <div class="form-group">
+                            <label for="id_value">Valor</label>
+                            <div>
+                                {{ form.value.value }}
+                                <input type="text" step="0.1" class="form-control" name="value" id="value" value="{{ form.value.value }}">
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="form-group">
+                            <label for="id_value">Valor</label>
+                            <div>
+                                {{ form.value.value }}
+                                <input type="text" class="form-control" name="value" id="value" value="{{ form.value.value }}">
+                            </div>
+                        </div>
+                    {% endif %} {% endcomment %}
+
+                    {% comment %} {{ form.additional_costs|as_crispy_field }} {% endcomment %}
+                    <div class="form-group">
+                        <label for="id_additional_costs">Costos adicionales/externos</label>
+                        <input type="text" class="form-control value" name="additional_costs" value="{{ form.additional_costs.value }}" id="id_additional_costs">
+                    </div>
+                    {{ form.state|as_crispy_field }}
+                    {{ form.stages|as_crispy_field }}
+                    {% comment %} <input type="hidden" name="stages" value="1"> {% endcomment %}
+                    {{ form.title|as_crispy_field }}
+                    {{ form.description|as_crispy_field }}
+                    {{ form.duration_deliverables|as_crispy_field }}
+                    {{ form.document_url|as_crispy_field }}
+                    {{ form.contract_signed|as_crispy_field }}
+                    {{ form.project_type|as_crispy_field }}
+                    {{ form.project_depends|as_crispy_field }}
+
+                    <div class="form-group">
+                        <label for="">Categoría y versión</label>
+                        <select class="form-control select" name="category_version" id="id_category_version">
+                            <option value> --------- </option>
+                            {% for item in categories_versions %}
+                                <option value="{{ item.0 }}" {% if item.0 == form.category_version.value %} selected {% endif %}>{{ item.1 }} - Versión {{ item.2 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    {% comment %} <input type="hidden" name="budgeted_hours_id" value="{{ budgeted_hours.id }}"> {% endcomment %}
+
+                    <div class="form-group">
+                        <label for="">Notificar a*</label>
+                        <select class="form-control select2 select2-multiple" multiple data-placeholder="Select ..." name="users[]" id="users" required>
+                            {% for value, text in form.created_by.field.choices %}
+                                <option value="{{ text }}">{{ text }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    {% comment %} <div class="form-group">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-info mt-1">
+                                Enviar mensaje
+                            </button>
+                            <a class="btn btn-success mt-1 mr-1 float-right" href="{% url 'budgeted_hours:reviewed' %}?id={{ budgeted_hours.id }}">Revisado</a>
+                        </div>
+                    </div> {% endcomment %}
+
+                    <div class="form-group">
+                        <div class="row ml-1">
+                            <strong class="mr-1">Ocultar filas vacías:</strong>
+                            <input type="checkbox" id="switch1" switch="none">
+                            <label for="switch1" data-on-label="Sí" data-off-label="No"></label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="float-right btn btn-primary waves-effect waves-light">Revisado</button>
+                        {% if price_request_format %}
+                            <a href="{% url 'budgeted_hours:price_request_format_update' price_request_format.id %}" class="btn btn-info float-right mr-1">Detalle de oportunidad</a>
+                        {% endif %}
+                        {% if traceability %}
+                            <a href="{% url 'budgeted_hours:traceability_budgeted_hours_view' traceability.id %}" class="btn btn-info float-right mr-1">Trazabilidad</a>
+                        {% endif %}
+                        <a href="{% url 'budgeted_hours:budgeted_hours_list' %}" class="btn btn-light">Regresar</a>
+                        <a href="{% url 'budgeted_hours:budgeted_hours_files_list' budgeted_hours.id %}" class="btn btn-info">Archivos</a>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+        {% for key, value in groups.items %}
+            <div class="card" id="card-scope">
+                <div class="card-header">
+                    <!-- Nombre de la categoria -->
+                    <h4 class="card-title mt-0 mb-0">{{ key.category }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="form_group">
+                        <label for="value">Valor</label>
+                        <input type="text" name="value_{{ key.category.id }}" id="value_{{ key.category.id }}" value="{{ key.value }}" class="form-control value">
+                    </div>
+
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs nav-tabs-custom" role="tablist">
+                        {% for version in value %}
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#id{{ key.category.id }}_v{{ version.version }}" role="tab">
+                                    <span class="d-block d-sm-none"><i class="far fa-file-alt"></i></span>
+                                    <span class="d-none d-sm-block">versión {{ version.version }}</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        {% for version in value %}
+                            <div class="tab-pane p-3" id="id{{ key.category.id }}_v{{ version.version }}" role="tabpanel">
+
+                                <form action="{% url 'budgeted_hours:budgeted_hours_update' %}" method="POST" class="form" data-id="value_{{ key.category.id }}">
+
+                                    {% csrf_token %}
+
+                                    <input type="hidden" name="value" class="value_{{ key.category.id }}">
+                                    <input type="hidden" name="budgeted_hours" value="{{ budgeted_hours.id }}">
+                                    <input type="hidden" name="category" value="{{ key.category.id }}">
+                                    <input type="hidden" name="version" value="{{ version.version }}">
+
+                                    <div class="table-responsive">
+                                        <table id="activityTable" class="table table-striped mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Actividad</th>
+                                                    <th>Horas ingeniero</th>
+                                                    <th>Horas líder</th>
+                                                    <th>Horas líder senior</th>
+                                                    <th>Horas gerencia</th>
+                                                    <th>Tipo software</th>
+                                                    <th>Horas software</th>
+                                                    <th>Horas externo</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for hour in version.hours %}
+                                                    <tr>
+                                                        <td>
+                                                            {{ hour.activity.activity }}
+                                                            <input type="hidden" name="hours_pks[]" value="{{ hour.id }}" style="display: none;">
+                                                        </td>
+                                                        <td><input type="number" step="0.1" id="engineer" name="engineer[]" value="{{ hour.engineer|floatformat:'g' }}" class="form-control"></td>
+                                                        <td><input type="number" step="0.1" id="leader" name="leader[]" value="{{ hour.leader|floatformat:'g' }}" class="form-control"></td>
+                                                        <td><input type="number" step="0.1" id="senior_leader" name="senior_leader[]" value="{{ hour.senior_leader|floatformat:'g' }}" class="form-control"></td>
+                                                        <td><input type="number" step="0.1" id="management" name="management[]" value="{{ hour.management|floatformat:'g' }}" class="form-control"></td>
+                                                        <td>
+                                                            <select class="form-control" name="type_software[]">
+                                                                <option value>---------</option>
+                                                                {% for software in softwares %}
+                                                                    <option value="{{ software.id }}" {% if hour.software == software %} selected {% endif %}>{{ software }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </td>
+                                                        <td><input type="number" step="0.1" id="software" name="software[]" value="{{ hour.software_hours|floatformat:'g' }}" class="form-control"></td>
+                                                        <td><input type="number" step="0.1" id="external" name="external[]" value="{{ hour.external|floatformat:'g' }}" class="form-control"></td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            <tfoot></tfoot>
+                                        </table>
+                                    </div>
+
+                                    <div class="form-group mb-0">
+                                        <div>
+                                            <div class="row ml-1">
+                                                <strong class="mr-1">Crear nueva versión: </strong>
+                                                <input type="checkbox" id="new_version" name="new_version" class="mt-1">
+                                                <label for="new_version" data-on-label="Sí" data-off-label="No"></label>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary waves-effect waves-light float-right">
+                                                Guardar versión {{ version.version }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+        {% if categories %}
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mt-0 mb-0">Agregar nuevo alcance de horas</h4>
+                </div>
+                <div class="card-body">
+
+                    <form action="{% url 'budgeted_hours:budgeted_hours_add' %}" method="POST">
+
+                        {% csrf_token %}
+                        <input type="hidden" name="budgeted_hours" value="{{ budgeted_hours.id }}">
+
+                        <div class="form-group">
+                            <label for="id_category">Horas por alcance*</label>
+                            <div class="">
+                                <select class="form-control" name="category" id="id_category" required>
+                                    <option value selected>---------</option>
+                                    <option value="{{ categories.0.id }}">{{ categories.0 }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <table id="activityCategoriesTable" class="table table-striped m-b-0">
+                            <thead>
+                                <tr>
+                                    <th width="20%">Actividad</th>
+                                    <th>Horas ingeniero</th>
+                                    <th>Horas líder</th>
+                                    <th>Horas líder senior</th>
+                                    <th>Horas gerencia</th>
+                                    <th width="15%">Tipo software</th>
+                                    <th>Horas software</th>
+                                    <th>Horas externo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for activity in activities %}
+                                    <tr>
+                                        <td>
+                                            {{ activity.activity }}
+                                            <input type="hidden" name="activities_pks[]" value="{{ activity.id }}">
+                                        </td>
+                                        <td><input type="number" name="engineer[]" step="0.1" class="form-control" value="0"></td>
+                                        <td><input type="number" name="leader[]" step="0.1" class="form-control" value="0"></td>
+                                        <td><input type="number" name="senior_leader[]" step="0.1" class="form-control" value="0"></td>
+                                        <td><input type="number" name="management[]" step="0.1" class="form-control" value="0"></td>
+                                        <td>
+                                            <select class="form-control" name="type_software[]">
+                                                <option value selected>---------</option>
+                                                {% for software in softwares %}
+                                                    <option value="{{ software.id }}">{{ software }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                        <td><input type="number" name="software[]" step="0.1" class="form-control" value="0"></td>
+                                        <td><input type="number" name="external[]" step="0.1" class="form-control" value="0"></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="form-group">
+                            <div class="float-right">
+                                <button type="submit" class="btn btn-success waves-effect waves-light">
+                                    Crear
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+    </div><!-- end col -->
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<!-- JAVASCRIPT -->
+<script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'libs/select2/js/select2.min.js' %}"></script>
+<script src="{% static 'js/pages/form-advanced.init.js' %}"></script>
+
+<!-- maskMoney -->
+{% comment %} <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script> {% endcomment %}
+<script src="{% static 'js/mask_money.js' %}" type="text/javascript"></script>
+
+<script>
+    // let value1 = document.getElementById('value').value;
+    // value1.toLocaleString('es-CO', {style: 'currency', currency: 'COP', minumumFractionDigits: 2});
+    // document.getElementById('value').innerHTML = value1
+    // console.log(value1);
+
+    $(document).ready(function(){
+        $('#activityCategoriesTable').hide()
+        $('#id_category').on('change', function(){
+            $('#activityCategoriesTable').show()
+        })
+
+        $('#switch1').on('click', function(){
+            // $('#hide').toggleClass('mdi-eye-off')
+            // $('#hide').toggleClass('mdi-eye')
+            $('#activityTable').each(function(i){
+                var engineer = 0;
+                var leader = 0;
+                var senior_leader = 0;
+                var management = 0;
+                var software = 0;
+                var external = 0;
+                $("tbody").find("tr", this).each(function(){
+                    engineer = parseFloat($(this).find('#engineer').val())
+                    leader = parseFloat($(this).find('#leader').val())
+                    senior_leader = parseFloat($(this).find('#senior_leader').val())
+                    management = parseFloat($(this).find('#management').val())
+                    software = parseFloat($(this).find('#software').val())
+                    external = parseFloat($(this).find('#external').val())
+                    // console.log(engineer)
+                    if(engineer == 0 && leader == 0 && senior_leader == 0 && management == 0 && software == 0 && external == 0){
+                        $(this).eq(i).toggle()
+                    }
+                })
+            })
+        })
+
+        //console.log($(".card div #activityTable"));
+        $(".card div #activityTable").each(function(i){
+            var engineer = 0;
+            var leader = 0;
+            var senior_leader = 0;
+            var management = 0;
+            var software = 0;
+            var external = 0;
+            //console.log(i, el);
+            //console.log($("table tbody").eq(i).find("tr"));
+            $("tbody").eq(i).find("tr").each(function(){
+                engineer += parseFloat($(this).find('#engineer').val())
+                leader += parseFloat($(this).find('#leader').val())
+                senior_leader += parseFloat($(this).find('#senior_leader').val())
+                management += parseFloat($(this).find('#management').val())
+                software += parseFloat($(this).find('#software').val())
+                external += parseFloat($(this).find('#external').val())
+                //console.log(engineer)
+                //$("tfoot").eq(i).text(engineer);
+            })
+            $("tfoot")
+                .eq(i)
+                .append(`
+                    <tr>
+                        <th>Total</th>
+                        <th>${engineer}</th>
+                        <th>${leader}</th>
+                        <th>${senior_leader}</th>
+                        <th>${management}</th>
+                        <th></th>
+                        <th>${software}</th>
+                        <th>${external}</th>
+                    </tr>
+                `)
+        })
+
+        // $(function(){
+            // $('#activityTable tbody').empty()
+        $('#templates_budgeted_hours').on('change', function(){
+            // $('#activityTable').show()
+            var id = this.value
+            // console.log(id)
+            var url = `{% url 'budgeted_hours:hours_templates' %}?template_id=${id}`
+            $('.card div #activityTable tbody').empty()
+            $.get(url, function(data){
+                var hours_templates = data.hours_templates
+                for (var index = 0; index < hours_templates.length; index++) {
+                    var element = hours_templates[index];
+                    console.log(element.activity_id.activity)
+                    $('.card div #activityTable tbody')
+                        .append(`
+                            <tr>
+                                <td>${element.activity}</td>
+                                <td><input type="number" name="engineer[]" step="0.1" class="form-control" value="${element.engineer}"></td>
+                                <td><input type="number" name="leader[]" step="0.1" class="form-control" value="${element.leader}"></td>
+                                <td><input type="number" name="senior_leader[]" step="0.1" class="form-control" value="${element.senior_leader}"></td>
+                                <td><input type="number" name="management[]" step="0.1" class="form-control" value="${element.management}"></td>
+                                <td>
+                                    <select class="form-control" name="type_software[]">
+                                        <option value="${element.software_id}" selected>${element.software}</option>
+                                    </select>
+                                </td>
+                                <td><input type="number" name="software[]" step="0.1" class="form-control" value="${element.software_hours}"></td>
+                                <td><input type="number" name="external[]" step="0.1" class="form-control" value="${element.external}"></td>
+                            </tr>
+                        `)
+                }
+            })
+        })
+
+        $('.card div #activityTable').each(function(i){
+
+            // var ele = $("table tbody").eq(i).find("tr");
+            // console.log(ele.length)
+            if($("table tbody").eq(i).find("tr").length == 0){
+                console.log("No hay");
+                $("#card-scope .card-body").eq(i).css("display", "none")
+
+            }
+
+        })
+
+        // Tomar el valor fuera del <form> y ponerlo en el <form> con un campo hidden
+        $(".form").submit(function(){
+            const id = $(this).data("id")
+            console.log(id);
+            const value = $(`#${id}`).val()
+            console.log(value);
+            $(`.${id}`).val(value)
+        })
+
+        $(function() {
+            $('.value').maskMoney({
+                thousands:',',
+                decimal:'.'
+            });
+        })
+
+        $(function(){
+            $("#id_start_at, #id_compromise_delivery_at").datepicker({
+                autoclose:!0,
+                format: 'dd/mm/yyyy',
+                todayHighlight:!0
+            }).attr('readonly', 'false')
+        })
+    })
+</script>
+{% endblock scripts %}

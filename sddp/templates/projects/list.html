@@ -1,0 +1,78 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% block content %}
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Proyectos</h4>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+  
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4 ">                    
+                    {% if perms.sddp.add_project  %}
+                        <a class='float-right btn btn-success' href="{% url 'sddp:projects_create'  %}">Agregar</a>                
+                    {% endif %} 
+                </h4>
+                <div class="table-responsive mt-5">
+                    <table class="table table-centered table-vertical table-nowrap mb-1">
+                        <thead>
+                            <tr>
+                                <th>Nombre del proyecto</th>
+                                <th>Descripción</th>
+                                <th>Factor de demanda</th>
+                                <th>TRM</th>
+                                <th>Fecha TRM</th>
+                                <th>Fecha entrada de operacion</th>
+                                <th>Fecha limite de operacion</th>
+                                <th>Bases de datos</th>
+                                <th>Creado por</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in projects %}
+                                <tr>
+                                
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.description }}</td>
+                                    <td>{{ item.demand_factor }}</td>
+                                    <td>{{ item.trm}}</td>
+                                    <td>{{ item.trm_date}}</td>
+                                    <td>{{ item.start_date}}</td>
+                                    <td>{{ item.limit_date}}</td>
+                                    <td>{{ item.dbs.count }}</td>
+                                    
+                                  
+                                    <td>
+                                        {{ item.created_by.first_name}} {{ item.created_by.last_name}}
+                                    </td>
+                                    <td class='text-right'>
+                                        {% if perms.sddp.delete_project or item.created_by == request.user  %}
+                                            <a href="{% url 'sddp:projects_delete' item.pk  %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                        {% endif %} 
+                                    </td> 
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock content %}
+

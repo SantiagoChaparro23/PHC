@@ -1,0 +1,42 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Combustible</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Crear</h4>
+                <p class="card-title-desc">Ingrese la información que desea registrar</p>
+
+                <form method="POST">
+
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="form-group mb-0">
+                        <div>
+                            <button type="submit" class="btn btn-primary float-right">Guardar</button>
+                            <a href="{% url 'configuration_sddp:fuel_list' %}"  class="btn btn-light">Regresar</a>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}

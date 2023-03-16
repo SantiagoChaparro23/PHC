@@ -1,0 +1,191 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block head %}
+<link href="{% static 'libs/select2/css/select2.min.css' %}" rel="stylesheet" type="text/css" />
+
+{% comment %} <!-- DataTables -->
+<link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+<!-- Responsive datatable examples -->
+<link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" /> {% endcomment %}
+{% endblock head %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Colaboradores</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="mr-2">Estado</label>
+                                <select name="state" class="form-control select2">
+                                    <option value="">Select</option>
+                                    {% for i in states %}
+                                        <option value="{{ i.0 }}" {% if state == i.0 %} selected {% endif %}>{{ i.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label class="mr-2">Colaborador</label>
+                                <select name="user" class="form-control select2">
+                                    <option value="">Select</option>
+                                    {% for i in users %}
+                                        <option value="{{ i.pk }}" {% if user == i.pk %} selected {% endif %}>{{ i.username }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'vacations:collaborators_list' %}" class="btn btn-light">Limpiar</a>
+                    <button type="submit" class="btn btn-primary float-right">Consultar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Lista
+
+                    <div class="float-right">
+                        <div class="row mr-0">
+                            <a class="btn btn-success mr-1" href="{% url 'vacations:collaborator_create' %}">Crear</a>
+                            <form action="{% url 'vacations:download_collaborators' %}">
+                                <button type="submit" class="btn btn-info">Descargar</button>
+                            </form>
+
+                        </div>
+                    </div>
+                </h4>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Colaborador</th>
+                                <th>Estado</th>
+                                {% comment %} <th>Cédula</th> {% endcomment %}
+                                <th>Fecha ingreso</th>
+                                <th>Días vacaciones</th>
+                                <th>Días tomados</th>
+                                <th>Días extras</th>
+                                <th>Días disponibles</th>
+                                {% comment %} <th>Salario</th> {% endcomment %}
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for collaborator in page.object_list %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'vacations:collaborator_change' collaborator.pk %}"> {{ collaborator.user|truncatechars:20 }}</a>
+                                    </td>
+                                    <td>
+                                        {{ collaborator.get_state_display }}
+                                    </td>
+                                    {% comment %} <td>
+                                        {{ collaborator.id_card|default:"" }}
+                                    </td> {% endcomment %}
+                                    <td>
+                                        {{ collaborator.entry_at|default:"" }}
+                                    </td>
+                                    <td>
+                                        {{ collaborator.days_vacations|floatformat }}
+                                    </td>
+                                    <td>
+                                        {{ collaborator.days_taken }}
+                                    </td>
+                                    <td>
+                                        {{ collaborator.days_extra }}
+                                    </td>
+                                    <td>
+                                        {{ collaborator.days_available|floatformat }}
+                                    </td>
+                                    {% comment %} <td>
+                                        {{ collaborator.salary|default:0 }}
+                                    </td> {% endcomment %}
+                                    <td class="">
+                                        <a href="{% url 'vacations:collaborator_change' collaborator.pk  %}" class="btn btn-warning btn-sm waves-effect waves-light">Editar</a>
+                                        <a href="{% url 'vacations:collaborator_delete' collaborator.pk %}" class="btn btn-danger btn-sm waves-effect waves-light">Eliminar</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
+                    <div class="float-right ">
+                        Mostrando {{ page.start_index }} a {{ page.end_index }} de {{ count }} entradas
+                    </div>
+
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            {% if page.has_previous %}
+                                <li class="page-item"><a class="page-link" href="{% url 'vacations:collaborators_list' %}?page={{ page.previous_page_number }}">Anterior</a></li>
+                            {% endif %}
+                            {% if page.has_next %}
+                                <li class="page-item"><a class="page-link" href="{% url 'vacations:collaborators_list' %}?page={{ page.next_page_number }}">Siguiente</a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'libs/select2/js/select2.min.js' %}"></script>
+<script src="{% static 'js/pages/form-advanced.init.js' %}"></script>
+
+<!-- JAVASCRIPT -->
+{% comment %} <script src="{% static 'libs/jquery/jquery.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/metismenu/metisMenu.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/simplebar/simplebar.min.js' %}"></script>
+<script src="{% static 'libs/node-waves/waves.min.js' %}"></script>
+<script src="{% static 'libs/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+
+<!-- Required datatable js -->
+<script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+
+<!-- Buttons examples -->
+<script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'libs/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'libs/pdfmake/build/pdfmake.min.js' %}"></script>
+<script src="{% static 'libs/pdfmake/build/vfs_fonts.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+
+<!-- Responsive examples -->
+<script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+<!-- Datatable init js -->
+<script src="{% static 'js/pages/datatables.init.js' %}"></script> {% endcomment %}
+
+<!-- App js -->
+{% comment %} <script src="{% static 'js/app.js' %}"></script> {% endcomment %}
+{% endblock scripts %}

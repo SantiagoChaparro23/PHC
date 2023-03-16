@@ -1,0 +1,66 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Proyecto</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Lista
+                    <a class='float-right btn btn-success' href="{% url 'configuration_sddp:project_create' %}">Crear</a>
+                </h4>
+
+                <div class="table-responsive">
+                    <table class="table table-centered table-vertical table-nowrap mb-1">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Inicio de año</th>
+                                <th>Fin de año</th>
+                                <th>Periodicidad de subasta</th>
+                                <th>Inicio de regasificación</th>
+                                <th>Estado</th>
+                                <th>Precio de combustible</th>
+                                <th>Tasa de crecimiento</th>
+                                <th>Creado por</th>
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in project %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.year_init_optimization }}</td>
+                                    <td>{{ item.year_end_optimization }}</td>
+                                    <td>{{ item.periodicity_auction }}</td>
+                                    <td>{{ item.regasification_init }}</td>
+                                    <td>{{ item.status }}</td>
+                                    <td>{{ item.fuel_price_option }}</td>
+                                    <td>{{ item.growing_rate }}</td>
+                                    <td>{{ item.create_by }}</td>
+                                    <td class="text-right">
+                                        <a href="{% url 'configuration_sddp:project_change' item.pk  %}" class="btn btn-warning btn-sm">Editar</a>
+                                        <a href="{% url 'configuration_sddp:project_delete' item.pk  %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

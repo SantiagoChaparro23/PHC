@@ -1,0 +1,181 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% load format %}
+
+{% block head %}
+
+{% endblock head %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Reporte de {{user.first_name}} {{user.last_name}}</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+
+
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+            
+                {% comment %} <div class="row">
+                    <div class="col-md-3">
+                        <form action="" class="form-inline mt-2 mb-4">
+                            <div class="form-group">
+                                <input type="text" name="date" value="{{year}}-{{month}}" class="dateinput form-control" required="" id="date" readonly="readonly">
+                            </div>
+                            <div class="form-group ml-3">
+                                <button type='submit' class='btn btn-primary'>Consultar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div> {% endcomment %}
+
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Fecha reporte</th>
+                                <th>Código</th>
+                                
+                                <th>Actividad</th>
+                                <th>Tiempo Reportado</th>
+                                <th></th>
+                            
+                                {% comment %} <th>Creado</th> {% endcomment %}
+                                {% comment %} <th class="text-right">Acciones</th> {% endcomment %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reported_hours in page.object_list %}
+                                <tr>
+                                    <td>
+                                        {{ reported_hours.report_date_at|date:"Y-m-d" }}
+                                    </td>
+                                    
+                                    <td>
+                                        <a href="{% url 'reported_hours:reported_hours_create' %}?project={{reported_hours.code.pk}}">
+                                            {{ reported_hours }}
+                                        </a>
+                                    </td>
+                                    
+                                    <td>
+                                        {{ reported_hours.activity.activity }}
+                                    </td>
+                                    <td>
+                                        
+                                        {{ reported_hours.format_minutes }} 
+                                        <small class='text-muted'> / {{reported_hours.time}} Min.<small>
+                                    </td>
+
+                                    <td>
+                                   
+                                            <a onclick="if (confirm('Esta seguro de eliminar este reporte?')){return true;}else{event.stopPropagation(); event.preventDefault();};" href="{% url 'reported_hours:reported_hours_delete' reported_hours.pk %}" class="btn btn-danger btn-sm waves-effect waves-light">Eliminar</a> 
+                                       
+                                    </td>
+                                
+                                    {% comment %} <td>
+                                        {{ reported_hours.created_at }}
+                                    </td>
+                                    <td class='text-right'>
+                                        <a href="{% url 'budgeted_hours:activity_view' activity.pk  %}" class="btn btn-warning btn-sm waves-effect waves-light">Editar</a>
+                                        <a href="{% url 'budgeted_hours:activity_delete' activity.pk %}" class="btn btn-danger btn-sm waves-effect waves-light">Eliminar</a> 
+                                    </td> {% endcomment %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="row">     
+                        <div class="col-sm-12 col-md-7">
+                            <div class="dataTables_paginate paging_simple_numbers " id="">
+                                <ul class="pagination">
+                                    
+                                    {% if page.has_previous %}
+                                        <li class="paginate_button page-item previous" id="datatable_previous">
+                                            <a href="{% url 'reported_hours:user_report' user.id %}?page={{page.previous_page_number}}" aria-controls="datatable" data-dt-idx="0" tabindex="0" class="page-link">Anterior</a>
+                                        </li>   
+                                    {% endif %}
+                                    
+                                
+                                    {% if page.has_next %}
+                                        <li class="paginate_button page-item next" id="datatable_next">
+                                            <a href="{% url 'reported_hours:user_report' user.id %}?page={{page.next_page_number}}" aria-controls="datatable" data-dt-idx="7" tabindex="0" class="page-link">Siguiente</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    
+                    </div>
+
+
+                </div>
+            
+
+            
+            
+            </div>
+            
+        </div>
+        
+        
+    </div>
+
+
+    
+    
+
+  
+</div>
+
+
+
+
+
+{% endblock content %}
+
+
+
+
+
+{% block scripts %}
+<!-- JAVASCRIPT -->
+    
+    <script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+
+    <script>
+   
+    $(document).ready(function(){
+    
+        $("#date").attr('readonly', 'readonly')
+        $("#date").datepicker({
+            autoclose:!0,
+            format: 'yyyy-mm',
+            orientation: 'bottom',
+            todayHighlight: true,
+            viewMode: "months", 
+            minViewMode: "months"
+        })
+
+    })
+    </script>
+    
+
+    {% comment %} <script>
+   $(document).ready( function () {
+    $('#myTable').DataTable({
+        
+    });
+} );
+    </script> {% endcomment %}
+{% endblock scripts %}
+
+

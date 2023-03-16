@@ -1,0 +1,101 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block scripts %}
+    <!-- JAVASCRIPT -->
+    <script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+    {% comment %} <script src="{% static 'libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script> {% endcomment %}
+    {% comment %} <script src="{% static 'libs/metismenu/metisMenu.min.js' %}"></script> {% endcomment %}
+    <script src="{% static 'libs/simplebar/simplebar.min.js' %}"></script>
+    <script src="{% static 'libs/node-waves/waves.min.js' %}"></script>
+    <script src="{% static 'libs/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+
+    <!-- Required datatable js -->
+    <script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Buttons examples -->
+    <script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'libs/jszip/jszip.min.js' %}"></script>
+    <script src="{% static 'libs/pdfmake/build/pdfmake.min.js' %}"></script>
+    <script src="{% static 'libs/pdfmake/build/vfs_fonts.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+
+    <!-- Responsive examples -->
+    <script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+    <!-- Datatable init js -->
+    <script src="{% static 'js/pages/datatables.init.js' %}"></script>
+
+    <!-- App js -->
+    <script src="{% static 'js/app.js' %}"></script>
+
+    <script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'libs/select2/js/select2.min.js' %}"></script>
+    <script src="{% static 'js/pages/form-advanced.init.js' %}"></script>
+
+    <script>
+        $(function(){
+            $("#id_start_date_vacations").datepicker({
+                    autoclose:!0,
+                    format: 'dd/mm/yyyy',
+                    todayHighlight:!0
+            }).attr('readonly', 'true')
+
+
+            $("#id_end_date_vacations").datepicker({
+                    autoclose:!0,
+                    format: 'dd/mm/yyyy',
+                    todayHighlight:!0
+            }).attr('readonly', 'true')            
+
+
+         })
+    </script>
+
+{% endblock scripts %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Solicitud</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Modificar</h4>
+                <p class="card-title-desc">Aceptar solicitud por el lider</p>
+
+                <form method='POST'>
+
+                    {% csrf_token %}
+                    <input type="hidden" name="leader" value="{{ form.leader.value }}">
+                    {{ form.comments|as_crispy_field }}
+
+                    <div class="form-group mb-0">
+                        <button type="submit" name="accepted_leader" value="False" class="btn btn-danger float-right mx-1">Rechazar</button>
+                        <button type="submit" name="accepted_leader" class="btn btn-warning float-right mx-1">Pendiente</button>
+                        <button type="submit" name="accepted_leader" value="True" class="btn btn-success float-right mx-1">Aceptar</button>
+                        <a href="{% url 'vacations:requests_detail' requests.pk %}" class="btn btn-light">Regresar</a>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}

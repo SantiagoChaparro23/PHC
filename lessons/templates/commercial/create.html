@@ -1,0 +1,590 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block head %}
+    <link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+    <link href="{% static 'libs/select2/css/select2.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock head %}
+
+{% block content %}
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="page-title-box">
+                <h4>Comercial - Lecciones aprendidas</h4>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+
+                    <h4 class="card-title">Modificar</h4>
+                
+                    <form method='POST'>
+
+                        {% csrf_token %}
+
+                        {{ form|crispy }}
+
+
+                        <div class="card">
+
+                            <strong>Lecciones negativas:</strong>
+
+                            <table id="negative_table" class="table table-bordered dt-responsive nowrap dataTable no-footer dtr-inline">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Descripcion general</th>
+                                        <th>Descripcion detallada</th>
+                                        <th></th>
+                                    </tr>
+                                    {% for row in negative_lessons %}
+                                            <tr>
+                                                <td>
+                                                    {{ forloop.counter }}
+                                                </td>
+                                                <td>                                            
+                                                    <textarea style="border:none; height:100%; width:100%" 
+                                                        class="overflow-auto form-control" 
+                                                        name="negative_table_general_desc[]" 
+                                                        value="">{{ row.general }}</textarea>
+                                                </td>
+                                                <td>
+                                                    <textarea style="border:none; height:100%; width:100%" 
+                                                        class="overflow-auto form-control" 
+                                                        name="negative_table_detail_desc[]" 
+                                                        value="">{{ row.description }}</textarea>
+                                                </td>
+                                                <td style="width:100px">
+                                                    <input id="negative_button_{{ forloop.counter }}" 
+                                                        class="btn btn-danger waves-effect waves-light mr-1" 
+                                                        type="button" 
+                                                        value="Eliminar" 
+                                                        onclick="delete_specific_row('negative_table', {{ forloop.counter }});" />
+                                                </td>                                                
+                                            </tr>
+                                    {% endfor %}
+                                </thead>  
+                            </table>
+
+                            <div class="form-group ">
+                                <input type = "button" onclick = "add_lesson('negative_table')" value = "Agregar negativa" 
+                                    class="btn btn-primary waves-effect waves-light float-right">
+
+                            </div>                      
+
+                        </div>
+
+                        <div class="card">
+
+                            <strong>Lecciones positivas:</strong>
+
+                            <table id="positive_table" class="table table-bordered dt-responsive nowrap dataTable no-footer dtr-inline">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Descripcion general</th>
+                                        <th>Descripcion detallada</th>
+                                        <th></th>
+                                    </tr>
+                                    {% for row in positive_lessons %}
+                                            <tr>
+                                                <td>
+                                                    {{ forloop.counter }}
+                                                </td>
+
+                                                <td>                                            
+                                                    <textarea style="border:none; height:100%; width:100%" 
+                                                        class="overflow-auto form-control" 
+                                                        name="positive_table_general_desc[]" 
+                                                        value="">{{ row.general }}</textarea>
+                                                </td>
+                                                <td>
+                                                    <textarea style="border:none; height:100%; width:100%" 
+                                                        class="overflow-auto form-control" 
+                                                        name="positive_table_detail_desc[]" 
+                                                        value="">{{ row.description }}</textarea>
+                                                </td>
+                                                <td style="width:100px">
+                                                    <input id="positive_button_{{ forloop.counter }}" 
+                                                        class="btn btn-danger waves-effect waves-light mr-1" 
+                                                        type="button" 
+                                                        value="Eliminar" 
+                                                        onclick="delete_specific_row('positive_table', {{ forloop.counter }});" />
+                                                </td>
+
+
+                                            </tr>
+                                    {% endfor %}                             
+                                </thead>    
+                            </tr>
+                            </table>
+
+                            <div class="form-group ">
+                                <input type = "button" onclick = "add_lesson('positive_table')" value = "Agregar positiva" 
+                                    class="btn btn-primary waves-effect waves-light float-right"> 
+                            </div>
+
+                        </div>                    
+
+                        <div class="card">
+
+                            <strong>Acciones preventivas:</strong>
+
+                            <table id="preventive_table" class="table table-bordered dt-responsive nowrap dataTable no-footer dtr-inline">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Descripcion</th>
+                                        <th>Lecciones</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+
+                                    {% for row in preventive_actions %}
+                                        {% with num_id=forloop.counter|add:"-1" %}     
+                                            <tr>
+                                                <td>
+                                                    {{ forloop.counter }}
+                                                </td>
+                                                <td style="position: relative; width:50%">
+                                                    <textarea style="border:none; height:80%; width:90%; position: absolute; resize: none;" 
+                                                        class="overflow-auto form-control" 
+                                                        name="preventive_table_desc[]" 
+                                                        value="">{{ row.description }}</textarea>                                                
+                                                </td>
+                                                <td>
+                                                    <table class='table table-borderless' 
+                                                        id = 'prev_sub_table_neg{{num_id}}'>
+                                                        <thead>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Negativas afectadas</td>
+                                                            </tr>
+
+                                                            {% for bool in row.neg_sub_table %}
+                                                                <tr>
+                                                                    <td>
+                                                                        {{forloop.counter}}
+                                                                    </td>
+                                                                    <td>
+                                                                        {% if bool.1 == True %}
+                                                                            <input type="checkbox" 
+                                                                                name="prev_neg_{{forloop.parentloop.counter}}_{{forloop.counter}}_checkbox"
+                                                                                value="True" 
+                                                                                checked>
+                                                                        {% else %}
+                                                                            <input type="checkbox" 
+                                                                                name="prev_neg_{{forloop.parentloop.counter}}_{{forloop.counter}}_checkbox"
+                                                                                value="True">
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+
+                                                        </thead>
+                                                    </table>
+                                                </td>
+                                                <td>
+                                                    
+                                                    <table class='table table-borderless'
+                                                        id = 'prev_sub_table_pos{{num_id}}'>
+                                                        <thead>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Positivas afectadas</td>
+                                                            </tr>
+
+                                                            {% for bool in row.pos_sub_table %}
+                                                                <tr>
+                                                                    <td>
+                                                                        {{forloop.counter}}
+                                                                    </td>
+                                                                    <td>
+                                                                        {% if bool.1 == True %}
+                                                                            <input type="checkbox" 
+                                                                                name="prev_pos_{{forloop.parentloop.counter}}_{{forloop.counter}}_checkbox"
+                                                                                value="True" 
+                                                                                checked>
+                                                                        {% else %}
+                                                                            <input type="checkbox" 
+                                                                                name="prev_pos_{{forloop.parentloop.counter}}_{{forloop.counter}}_checkbox"
+                                                                                value="True">
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                            
+                                                        </thead>
+                                                    </table>
+                                                </td>
+                                                <td style="width:100px" class="align-middle">
+                                                    <input id="preventive_button_{{ forloop.counter }}" 
+                                                        class="btn btn-danger waves-effect waves-light mr-1" 
+                                                        type="button" 
+                                                        value="Eliminar" 
+                                                        onclick="delete_preventive({{ forloop.counter }});" />
+                                                </td>     
+                                            </tr>
+                                        {% endwith %}
+                                        
+                                    {% endfor %}
+
+                                </thead>
+                            </tr>
+                            </table> 
+
+                            <div class="form-group ">
+                                <input type = "button" onclick = "add_preventive()" value = "Agregar preventiva" 
+                                    class="btn btn-primary waves-effect waves-light float-right">
+                            </div>                          
+
+                        </div>
+    
+                        <div id="div_id_service_type" class="form-group">
+
+                            <label for="id_service_type" class=" requiredField">Participantes
+                                <span class="asteriskField">*</span>
+                            </label> 
+
+                            <div class=""> 
+                                <select name="users_name[]" id="users" multiple="true" class="form-control select2 select2-multiple" multiple data-placeholder="Select ..." required>
+
+                                        {% for user in users %}
+                                            {% if user.id in select_comm_users %}
+                                                <option value="{{ user.id }}" selected>{{ user.username }}</option>
+                                            {% else %}
+                                                <option value="{{ user.id }}">{{ user.username }}</option>
+                                            {% endif %}
+                                                
+                                        {% endfor %}
+
+                                </select>
+                            </div> 
+
+                        </div>
+
+                        <div id="div_id_service_type" class="form-group">
+
+                            <label for="id_service_type" class=" requiredField">Areas relacionadas
+                                <span class="asteriskField">*</span>
+                            </label> 
+
+                            <div class=""> 
+                                <select name="related_areas_name[]" id="related_areas" multiple="true" class="form-control select2 select2-multiple" multiple data-placeholder="Select ..." required>
+
+                                        {% for rl in related_area %}
+                                            {% if rl.id in select_related_areas %}
+                                                <option value="{{ rl.id }}" selected>{{ rl.name }}</option>
+                                            {% else %}
+                                                <option value="{{ rl.id }}">{{ rl.name }}</option>
+                                            {% endif %}      
+
+                                        {% endfor %}
+
+                                </select>
+                            </div> 
+                            
+                        </div>                    
+
+                        <div class="form-group mb-0">
+                            <div>
+                                <button type="submit" class="btn btn-primary waves-effect waves-light mr-1">
+                                    Guardar
+                                </button>
+                                <a href="{% url 'lessons:commercial_list' %}"  class="btn btn-light">Regresar</a>
+                            </div>
+                        </div>
+    
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- end col -->
+
+    </div>
+
+{% endblock content %}
+
+{% block scripts %}
+
+    <script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'libs/select2/js/select2.min.js' %}"></script>
+    <script src="{% static 'js/pages/form-advanced.init.js' %}"></script>
+
+    <script>
+        $(function(){
+            $("#id_date").datepicker({
+                    autoclose:!0,
+                    format: 'yyyy-mm-dd',
+                    todayHighlight:!0
+            }).attr('readonly', 'true')
+
+
+            resetSelect('#id_operator')
+            resetSelect('#id_area')
+
+
+            function resetSelect(selector){
+
+                $(selector).empty()
+            }
+
+         })
+    </script>
+
+    <script type = "text/javascript">
+
+            function standard_variables_for_table(table_id) {
+
+                if (table_id == 'negative_table') {
+                   var idx_col_tbls = 2
+                   var prefix_button = 'negative_button'
+                   var prefix_prev_sub_table = 'prev_sub_table_neg'
+                   var prefix_sub_checkboxes = 'prev_neg'
+
+                } else if (table_id == 'positive_table') {
+                   var idx_col_tbls = 3
+                   var prefix_button = 'positive_button'
+                   var prefix_prev_sub_table = 'prev_sub_table_pos'
+                   var prefix_sub_checkboxes = 'prev_pos'
+                }
+
+                return [idx_col_tbls, prefix_button, prefix_prev_sub_table, prefix_sub_checkboxes]
+
+            }
+
+
+            /*
+                Add a new lesson in the specified table with id table_id
+            */
+            function add_lesson(table_id) {
+
+                var [_, prefix_button, __, ___] = standard_variables_for_table(table_id)
+
+                var table = document.getElementById(table_id);
+                var row = table.insertRow(-1);
+
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+
+                var i = table.rows.length - 1
+
+                cell0.innerHTML = i
+                cell1.innerHTML = `<textarea style="border:none; height:100%; width:100%" class="overflow-auto form-control" name="${table_id}_general_desc[]" value="">`
+                cell2.innerHTML = `<textarea style="border:none; height:100%; width:100%" class="overflow-auto form-control" name="${table_id}_detail_desc[]" value="">`
+                cell3.innerHTML = `<input id="${prefix_button}_${i}" 
+                                    class="btn btn-danger waves-effect waves-light mr-1" 
+                                    type="button" 
+                                    value="Eliminar" 
+                                    onclick="delete_specific_row('${table_id}', ${i});" />`
+
+                cell3.style.width = "100px"
+                               
+
+                add_row_checkbox(table_id)
+
+            }
+
+            /*
+                Fix the checkboxes of the preventive when a new lesson is added,
+                adding a new checkbox in all negative/positive checkboxes tables 
+            */
+            function add_row_checkbox(table_id) {
+
+
+                var [_, __, prefix_prev_sub_table, prefix_sub_checkboxes] = standard_variables_for_table(table_id)
+
+                // Iterate about all the rows from preventive_table, adding a new checkbox
+                for (var i = 1; i < document.getElementById("preventive_table").rows.length; i++) {
+
+                    // I was not capable to get the table from the cell...so I used the id of each table
+                    var id_sub_tab = prefix_prev_sub_table + (i - 1).toString()
+                    var sub_table = document.getElementById(id_sub_tab)
+
+                    var row = sub_table.insertRow(-1)
+                    var cell0 = row.insertCell(0);
+                    var cell1 = row.insertCell(1);
+
+                    var prev_int = parseInt(sub_table.rows[sub_table.rows.length-2].cells[0].innerText, 10) + 1
+
+                    if (Number.isNaN(prev_int)){
+                        prev_int = 1
+                    }
+
+                    cell0.innerHTML = prev_int
+                    cell1.innerHTML = `<input type="checkbox" name="${prefix_sub_checkboxes}_${i}_${prev_int}_checkbox" value="True">`
+
+                }
+
+            }            
+
+            /*
+                Delete a lesson from table where the lesson are and other 
+                subtables from preventive actions
+            */
+            function delete_specific_row(table_id, idx) {
+
+                // Select required table
+                var table = document.getElementById(table_id);
+
+                // Delete wished row
+                table.deleteRow(idx);
+
+                
+                var [_, prefix_button, prefix_prev_sub_table, __] = standard_variables_for_table(table_id)
+
+
+                // Iterate about all the rows from original table or row 
+                for (var i = idx; i < table.rows.length; i++) {
+
+                    table.rows[i].cells[0].innerHTML = i
+
+                    table.rows[i].cells[3].innerHTML = `<input id="${prefix_button}_${i}" 
+                                                        class="btn btn-danger waves-effect waves-light mr-1" 
+                                                        type="button" 
+                                                        value="Eliminar" 
+                                                        onclick="delete_specific_row('${table_id}', ${i});" />`
+
+                }
+
+
+                // Iterate about all the rows from preventive_table, deleting the wished row checkbox
+                for (var i = 1; i < document.getElementById("preventive_table").rows.length; i++) {
+
+                    // I was not capable to get the table from the cell...so I used the id of each table
+                    var id_sub_tab = prefix_prev_sub_table + (i - 1).toString()
+                    var sub_table = document.getElementById(id_sub_tab)
+
+                    sub_table.deleteRow(idx)
+
+                }
+
+            }            
+
+            /*
+                Add a new preventive action row in the preventive_table
+            */
+            function add_preventive() {
+
+                // Add a new row to preventive_table
+                var table = document.getElementById("preventive_table");
+                var row = table.insertRow(-1)
+
+                var cell0 = row.insertCell(0)
+                var cell1 = row.insertCell(1)
+                var cell_neg_tbl = row.insertCell(2)
+                var cell_pos_tbl = row.insertCell(3)
+                var cell_button = row.insertCell(4)
+
+                var num_row_prev = table.rows.length - 1
+                cell0.innerHTML = num_row_prev
+                cell1.innerHTML = `<textarea style="border:none; height:80%; width:90%; position: absolute; resize:none" 
+                                             class="overflow-auto form-control" 
+                                             name="preventive_table_desc[]" value="">`
+
+                cell1.style.width = "50%"
+                cell1.style.position = "relative"
+
+
+                // Add checkboxes table
+                //      Create table
+                //          Negative
+                var prevent_neg_table = document.createElement("table")
+                var header = prevent_neg_table.createTHead();
+                var row = header.insertRow(0);
+                var subcell0 = row.insertCell(0);
+                var subcell1 = row.insertCell(1);
+                prevent_neg_table.setAttribute('id', 'prev_sub_table_neg' + (table.rows.length - 2).toString())
+                prevent_neg_table.setAttribute('class', 'table table-borderless')
+                subcell0.innerHTML = ""
+                subcell1.innerHTML = "Negativas afectadas"
+
+                //          Positive
+                var prevent_pos_table = document.createElement("table")
+                var header = prevent_pos_table.createTHead();
+                var row = header.insertRow(0);
+                var subcell0 = row.insertCell(0);
+                var subcell1 = row.insertCell(1);
+                prevent_pos_table.setAttribute('id', 'prev_sub_table_pos' + (table.rows.length - 2).toString())
+                prevent_pos_table.setAttribute('class', 'table table-borderless')
+                subcell0.innerHTML = ""
+                subcell1.innerHTML = "Positivas afectadas"                
+
+                //      Add checkboxes to table
+                //          Negative
+                for (var i = 1; i < document.getElementById('negative_table').rows.length; i++) {
+
+                    var row = prevent_neg_table.insertRow(-1)
+                    var cell0 = row.insertCell(0);
+                    var cell1 = row.insertCell(1);
+
+                    cell0.innerHTML = i
+                    cell1.innerHTML = `<input type="checkbox" name="prev_neg_${num_row_prev}_${i}_checkbox" value="True">`
+                }
+
+                //          Positive
+                for (var i = 1; i < document.getElementById('positive_table').rows.length; i++) {
+
+                    var row = prevent_pos_table.insertRow(-1)
+                    var cell0 = row.insertCell(0);
+                    var cell1 = row.insertCell(1);
+
+                    cell0.innerHTML = i
+                    cell1.innerHTML = `<input type="checkbox" name="prev_pos_${num_row_prev}_${i}_checkbox" value="True">`
+                }
+
+                //      Add tables to cells
+                cell_neg_tbl.appendChild(prevent_neg_table)
+                cell_pos_tbl.appendChild(prevent_pos_table)
+
+                // Add button 
+                cell_button.innerHTML = `<input id="preventive_button_${num_row_prev}" 
+                                          class="btn btn-danger waves-effect waves-light mr-1" 
+                                          type="button" 
+                                          value="Eliminar" 
+                                          onclick="delete_preventive(${num_row_prev});" />`
+
+                cell_button.style.width = "100px"
+                cell_button.className = "align-middle"
+
+
+            }
+
+            /*
+                Delete a preventive action in the specified table with id table_id
+            */
+            function delete_preventive(idx) {
+
+                var table = document.getElementById("preventive_table")
+
+                table.deleteRow(idx);
+
+                // Iterate about all the rows from original table or row 
+                for (var i = idx; i < table.rows.length; i++) {
+
+                    table.rows[i].cells[0].innerHTML = i
+
+                    table.rows[i].cells[4].innerHTML = `<input id="preventive_button_${i}" 
+                                                          class="btn btn-danger waves-effect waves-light mr-1" 
+                                                          type="button" 
+                                                          value="Eliminar" 
+                                                          onclick="delete_preventive(${i});" />`
+
+                }                                                               
+
+            }
+
+    </script>
+
+{% endblock scripts %}

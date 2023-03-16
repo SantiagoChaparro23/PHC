@@ -1,0 +1,243 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block head %}
+<link href="{% static 'libs/select2/css/select2.min.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+{% comment %} <link href="{% static 'libs/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css' %}" rel="stylesheet">
+<link href="{% static 'libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css' %}" rel="stylesheet" /> {% endcomment %}
+
+<!-- DataTables -->
+<link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+<!-- Responsive datatable examples -->
+<link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+{% endblock head %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Horas presupuestadas</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Filtros
+                </h4>
+
+                <form action="{% url 'budgeted_hours:budgeted_hours_list' %}" method="GET">
+                    <div class="form-group">
+                        <label>Código</label>
+                        <select class="form-control select2" name="q">
+                            <option value="">Select</option>
+                            {% for i in codes %}
+                                <option value="{{ i }}" {% if i == query %} selected {% endif %}>{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cliente</label>
+                        <select class="form-control select2" name="q2">
+                            <option value="">Select</option>
+                            {% for i in clients %}
+                                <option value="{{ i.client }}" {% if i.client == query2 %} selected {% endif %}>{{ i.client }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de servicio</label>
+                        <select class="form-control select2" name="q3">
+                            <option value="">Select</option>
+                            {% for i in service_types %}
+                                <option value="{{ i.service_type }}" {% if i.service_type == query3 %} selected {% endif %}>{{ i.service_type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select class="form-control select2" name="q4">
+                            <option value="">Select</option>
+                            {% for i in states %}
+                                <option value="{{ i.0 }}" {% if i.0 == query4 %} selected {% endif %}>{{ i.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Etapa</label>
+                        <select class="form-control select2" name="q5">
+                            <option value="">Select</option>
+                            {% for i in stages %}
+                                <option value="{{ i.0 }}" {% if i.0 == query5 %} selected {% endif %}>{{ i.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Creado por</label>
+                        <select class="form-control select2" name="q6">
+                            <option value="">Select</option>
+                            {% for i in users %}
+                                <option value="{{ i.username }}" {% if i.username == query6 %} selected {% endif %}>{{ i.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de inicio</label>
+                        <input type="date" name='q7' class="form-control" id="start_at" value="{{ query7 }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary float-right">Consultar</button>
+                    <a href="{% url 'budgeted_hours:budgeted_hours_list' %}" class="btn btn-light">Limpiar</a>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Lista
+                    <a class='float-right btn btn-light' href="{% url 'budgeted_hours:budgeted_hours_history' %}">Registro</a>
+                    <a class='float-right btn btn-success mr-1' href="{% url 'budgeted_hours:budgeted_hours_create' %}">Crear</a>
+                </h4>
+                <form action="{% url 'budgeted_hours:budgeted_hours_download' %}" method="GET">
+                    <button type="submit" class="btn btn-primary mb-1">Descargar</button>
+                    {% for i in budgetedhours %}
+                        <input type="hidden" name="budgetedhours_pks[]" value="{{ i.pk }}">
+                    {% endfor %}
+                </form>
+                <div class="table-responsive">
+                    <table class="table table-bordered dt-responsive nowrap">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Cliente</th>
+                                <th>Tipo de servicio</th>
+                                <th>Creado por</th>
+                                <th>Revisado por</th>
+                                <th>Estado</th>
+                                <th>Etapa</th>
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for budgeted_hour in budgetedhours %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'budgeted_hours:budgeted_hours_view' budgeted_hour.pk %}"> {{ budgeted_hour.code }}</a>
+                                    </td>
+                                    <td>
+                                        {{ budgeted_hour.client|default:"" }}
+                                    </td>
+                                    <td>
+                                        {{ budgeted_hour.service_type }}
+                                    </td>
+                                    <td>
+                                        {{ budgeted_hour.created_by|truncatechars:20 }}
+                                    </td>
+                                    <td>
+                                        {% for traceability in traceability_history %}
+                                            {% if traceability.budgeted_hours_id == budgeted_hour.traceabilitybudgetedhours.id %}
+                                                {{ traceability.reviewed_by|truncatechars:20 }}<br/>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% comment %} {{ budgeted_hour.traceabilitybudgetedhours.id }} {% endcomment %}
+                                    </td>
+                                    <td>
+                                        {{ budgeted_hour.get_state_display }}
+                                    </td>
+                                    <td>
+                                        {{ budgeted_hour.get_stages_display }}
+                                    </td>
+                                    <td>
+                                        {% if perms.budgeted_hours.change_budgetedhours %}
+                                            <a href="{% url 'budgeted_hours:budgeted_hours_view' budgeted_hour.pk  %}" class="btn btn-warning btn-sm waves-effect waves-light">Editar</a>
+                                        {% endif %}
+                                        {% if perms.budgeted_hours.delete_budgetedhours %}
+                                            <a href="{% url 'budgeted_hours:budgeted_hours_delete' budgeted_hour.pk %}" class="btn btn-danger btn-sm waves-effect waves-light">{% trans "Delete" %}</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<!-- JAVASCRIPT -->
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+{% comment %} <script src="{% static 'libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/metismenu/metisMenu.min.js' %}"></script> {% endcomment %}
+<script src="{% static 'libs/simplebar/simplebar.min.js' %}"></script>
+<script src="{% static 'libs/node-waves/waves.min.js' %}"></script>
+<script src="{% static 'libs/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+
+<!-- Required datatable js -->
+<script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+
+<!-- Buttons examples -->
+<script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'libs/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'libs/pdfmake/build/pdfmake.min.js' %}"></script>
+<script src="{% static 'libs/pdfmake/build/vfs_fonts.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+
+<!-- Responsive examples -->
+<script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+<!-- Datatable init js -->
+<script src="{% static 'js/pages/datatables.init.js' %}"></script>
+
+<!-- App js -->
+<script src="{% static 'js/app.js' %}"></script>
+
+<!-- JAVASCRIPT -->
+{% comment %} <script src="{% static 'libs/jquery/jquery.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/metismenu/metisMenu.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/simplebar/simplebar.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/node-waves/waves.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/jquery-sparkline/jquery.sparkline.min.js' %}"></script> {% endcomment %}
+
+<script src="{% static 'libs/select2/js/select2.min.js' %}"></script>
+<script src="{% static 'js/pages/form-advanced.init.js' %}"></script>
+<script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+{% comment %} <script src="{% static 'libs/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js' %}"></script>
+<script src="{% static 'libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js' %}"></script>
+<script src="{% static 'libs/admin-resources/bootstrap-filestyle/bootstrap-filestyle.min.js' %}"></script>
+<script src="{% static 'libs/bootstrap-maxlength/bootstrap-maxlength.min.js' %}"></script> {% endcomment %}
+
+{% comment %} <script src="{% static 'js/pages/form-advanced.init.js' %}"></script> {% endcomment %}
+
+<!-- App js -->
+{% comment %} <script src="{% static 'js/app.js' %}"></script> {% endcomment %}
+
+<script>
+    $(function(){
+        $("#start_at").datepicker({
+            autoclose:!0,
+            format: 'yyyy-mm-dd',
+            todayHighlight:!0
+        }).attr('readonly', 'false')
+    })
+</script>
+{% endblock scripts %}

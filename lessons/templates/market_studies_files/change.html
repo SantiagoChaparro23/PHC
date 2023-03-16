@@ -1,0 +1,118 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+
+{% block head %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.3.0/dropzone.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.3.0/basic.css" rel="stylesheet">
+   
+{% endblock head %}
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.3.0/dropzone.js"></script>
+
+    <script>
+    Dropzone.autoDiscover = false;
+    new Dropzone("#upload",{
+        clickable: ".dropzone",
+        url: "{% url 'lessons:market_studies_list_files' file.pk %}",
+        previewsContainer: "#previewsContainer",
+        uploadMultiple: true,
+        autoProcessQueue: false,
+         parallelUploads : 10,
+        maxFiles : 50,
+        init() {
+            var myDropzone = this;
+            this.element.querySelector("[type=submit]").addEventListener("click", function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                myDropzone.processQueue();
+            });
+
+            this.on("complete", function (file) {
+                if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+                    window.location = '{% url 'lessons:market_studies_list' %}?success=1'
+                }
+            });
+
+
+            
+        }
+        });
+
+</script>
+
+  
+{% endblock scripts %}
+
+
+
+
+
+
+{% block content %}
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Actualizar Archivo -  {{file.get_type}}</h4>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+
+                <h4 class="card-title"></h4>
+
+
+                
+              
+                <form id="upload"  enctype="multipart/form-data">
+
+                    <div id="previewsContainer" class="dropzone">
+                        <div class="dz-default dz-message">
+                            <div class="dz-message">Suelta los archivos aquí o haz clic para subirlos.
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class='mt-5'>
+                        <strong>Archivos</strong><br>
+                        {{file.files|safe}}
+                    </p>
+
+                    <p>
+                        <input id="dz-submit" class='btn btn-success ' type="submit" value="Subir archivos">
+                        <a href='{% url 'lessons:market_studies_list' %}' class="btn btn-light">Regresar</a>
+                       
+                        <a href='/{{file.file}}' class="btn btn-info float-right"><i class="fas fa-download"></i> Descargar</a>
+
+                        
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+
+</div>
+
+
+
+
+{% endblock content %}
+
+
+
+
+

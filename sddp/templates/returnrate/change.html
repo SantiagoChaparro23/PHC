@@ -1,0 +1,71 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+  
+
+
+{% block content %}
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Sddp - Crear Tasa de retorno</h4>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+
+                <h4 class="card-title">Nueva tasa de retorno</h4>
+              
+                <form method='POST' enctype="multipart/form-data">
+
+                    {% csrf_token %}
+             
+                    {{form.year|as_crispy_field}}
+                    {{form.value|as_crispy_field}}
+                    {{form.resolution|as_crispy_field}}
+                    {{form.tension_level|as_crispy_field}}
+                   
+                
+            
+                    <div class="form-group mb-0">
+                        <div>
+                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1">
+                                Guardar
+                            </button>
+                            <a href='{% url 'sddp:returnrate_list' %}'  class="btn btn-light">Regresar</a>
+
+
+                            {% if perms.sddp.delete_returnrate  %}
+                                <a href="{% url 'sddp:returnrate_delete' rate.pk  %}" class="btn btn-danger float-right">Eliminar</a>
+                            {% endif %} 
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+
+</div>
+
+
+
+
+{% endblock content %}
+
+
+
+
+

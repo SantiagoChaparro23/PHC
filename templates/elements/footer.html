@@ -1,0 +1,19 @@
+{% load static %}
+<footer class="footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                © {% now "Y" %} DATCORE <span class="d-none d-sm-inline-block"> - Hecho con <i class="mdi mdi-heart text-danger"></i> por 
+                 PHC. <img  style='width:20px' src='{% static 'images/phcuser.jpg' %}'/ ></span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+{% comment %} <script>
+    var ffWidgetId = '1b1c83cc-2282-431f-8de6-66bc30c7f831';
+    var ffWidgetScript  = document.createElement('script');
+    ffWidgetScript.type = 'text/javascript';
+    ffWidgetScript.src = 'https://cdn.freddyfeedback.com/widget/freddyfeedback.js';
+    document.head.appendChild(ffWidgetScript);
+</script> {% endcomment %}

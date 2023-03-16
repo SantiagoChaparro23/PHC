@@ -1,0 +1,49 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Asesorías</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-10">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">{{ consultancies.budgeted_hours }}</h4>
+            </div>
+            <div class="card-body">
+
+                <p>
+                    <b>Palabras clave:</b> {{ consultancies.title|default:"" }}<br/>
+                    <b>Fecha:</b> {{ consultancies.created_at }}<br/>
+                    <b>Cliente:</b> {{ consultancies.client|default:"" }}<br/>
+                    <b>Responsable:</b> {{ consultancies.created_by.first_name }} {{ consultancies.created_by.last_name }}<br/>
+                    <b>Tipo de lección:</b> {{ consultancies.get_lesson_type_display }}<br/>
+                    <b>Descripción:</b> {{ consultancies.description }}<br/>
+                    <b>Plan de acción propuesto:</b> {{ consultancies.action_plan }}<br/>
+                    {% if consultancies.file %}
+                        <b>Archivo:</b> <a href="/{{ consultancies.file }}" target="_blank">Descargar</a><br/>
+                    {% endif %}
+                </p>
+
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-6">
+                        <a href="{% url 'lessons:consultancies_list' %}"  class="btn btn-light">Regresar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}

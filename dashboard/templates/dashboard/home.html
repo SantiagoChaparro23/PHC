@@ -1,0 +1,181 @@
+
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+
+
+
+{% block content %}
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="page-title-box">
+                <h1>Datcore</h1>
+
+            </div>
+        </div>
+    </div>
+    <!-- end page title -->
+  
+    
+<div class="row">
+    {% if perms.imports.view_metric %}
+        <div class="col-xl-3 col-md-3">
+            <div class="card directory-card">
+                <div>
+                    <div class="directory-content text-center p-4">
+                        <p>
+                            <a href='{% url 'dashboard:standar'%}' ><img class='img-fluid' src='{% static 'images/illustrations/report.svg' %}'  style='top:0; height:111px'></a>
+                        </p>
+                        <h4 class="">MEC</h4>
+                        {% comment %} <a class='btn btn-info btn-xl btn-block' href='{% url 'dashboard:standar'%}'>Ingresar</a> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if perms.sddp.view_project or perms.sddp.view_dbs %}
+        <div class="col-xl-3 col-md-3">
+            <div class="card directory-card">
+                <div>
+                    <div class="directory-content text-center p-4">
+                        <p>
+                            <a href='{% url 'sddp:projects_list'%}' ><img class='img-fluid' src='{% static 'images/illustrations/sddp.svg' %}'  style='top:0; height:111px'></a>
+                        </p>
+                        <h4 class="">SDDP</h4>
+                        {% comment %} <a class='btn btn-info btn-xl  btn-block' href='{% url 'sddp:projects_list'%}'>Ingresar</a> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if perms.lessons.view_connectionstudies  %}
+    <div class="col-xl-3 col-md-3">
+        <div class="card directory-card">
+            <div>
+                <div class="directory-content text-center p-4">
+                    <p>
+                        <a href='{% url 'lessons:connection_studies_list' %}' ><img class='img-fluid' src='{% static 'images/illustrations/projects.svg' %}'  style='top:0; height:111px'></a>
+                    </p>
+                    <h4 class="">Lecciones aprendidas</h4>
+                    {% comment %} <a class='btn btn-info btn-xl btn-block' href='{% url 'lessons:connection_studies_list' %}'>Ingresar</a> {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+    {% if perms.budgeted_hours.view_budgetedhours %}
+        <div class="col-xl-3 col-md-3">
+            <div class="card directory-card">
+                <div>
+                    <div class="directory-content text-center p-4">
+                        <p>
+                            <a href='{% url 'budgeted_hours:budgeted_hours_list' %}' ><img class='img-fluid' src='{% static 'images/illustrations/calendar.svg' %}'  style='top:0; height:111px'></a>
+                        </p>
+                        <h4 class="">Horas presupuestadas</h4>
+                        {% comment %} <a class='btn btn-info btn-xl btn-block' href='{% url 'budgeted_hours:budgeted_hours_list' %}'>Ingresar</a> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if perms.record_business_interactions.view_visitrecord %}
+
+        <div class="col-xl-3 col-md-3">
+            <div class="card directory-card">
+                <div>
+                    <div class="directory-content text-center p-4">
+                        <p>
+                            <a href='{% url 'record_business_interactions:visit_record_list' %}' ><img class='img-fluid' src='{% static 'images/illustrations/record_business_interactions.svg' %}'  style='top:0; height:111px'></a>
+                        </p>
+                        <h4 class="">Interacciones comerciales</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+    
+    <div class="col-xl-3 col-md-3">
+        <div class="card directory-card">
+            <div>
+                <div class="directory-content text-center p-4">
+                    <p>
+                        <a href='{% url 'reported_hours:reported_hours_list' %}' ><img class='img-fluid' src="{% static 'images/illustrations/time.svg' %}"  style="top:0; height:111px"></a>
+                    </p>
+                    <h4 class="">Reporte de tiempo</h4>
+                    {% comment %} <a class='btn btn-info btn-xl btn-block' href='{% url 'lessons:connection_studies_list' %}'>Ingresar</a> {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-3">
+        <div class="card directory-card">
+            <div>
+                <div class="directory-content text-center p-4">
+                    <p>
+                        <a href="{% url 'vacations:requests_list' %}"><img class='img-fluid' src="{% static 'images/illustrations/vacations.svg' %}" style='top:0; height:111px'></a>
+                    </p>
+                    <h4 class="">Vacaciones</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-xl-3 col-md-3">
+        <div class="card directory-card">
+            <div>
+                <div class="directory-content text-center p-4">
+                    <p>
+                        <a target="_blank" href="https://360.phc.com.co/api/datcore?email={{ user.email }}"><img class='img-fluid' src="{% static 'images/illustrations/evaluation.svg' %}" style='top:0; height:111px'></a>
+                    </p>
+                    <h4 class="">Evaluación de desempeño</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-3">
+        <div class="card directory-card">
+            <div>
+                <div class="directory-content text-center p-4">
+                    <p>
+                        <a href="{% url 'documents:documents_list'%}"><img class='img-fluid' src="{% static 'images/illustrations/documents.svg' %}" style='top:0; height:111px'></a>
+                    </p>
+                    <h4 class="">Plantillas PHC</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-xl-3 col-md-3">
+        <div class="card directory-card">
+            <div>
+                <div class="directory-content text-center p-4">
+                    <p>
+                        <a href="{% url 'markers:team_list'%}"><img class='img-fluid' src="{% static 'images/illustrations/documents.svg' %}" style='top:0; height:111px'></a>
+                    </p>
+                    <h4 class="">Marcadores</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+
+    
+
+</div>
+
+
+
+{% endblock content %}
+

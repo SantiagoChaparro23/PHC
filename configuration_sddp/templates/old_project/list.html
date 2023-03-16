@@ -1,0 +1,84 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block head %}
+
+<link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+ 
+<style>
+    .nowrap{
+        white-space:nowrap;
+    }
+</style>
+
+
+{% endblock head %}
+
+
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Proyecto</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Lista
+                </h4>
+
+                <h4 class="card-title mb-4 ">                    
+                        <a class='float-right btn btn-success' href="{% url 'configuration_sddp:project_create'  %}">Agregar</a>                
+                </h4>
+
+                <div class="table-responsive mt-5">
+                    <table class="table table-centered table-vertical table-nowrap mb-1">
+                        <thead>
+                            <tr>
+                                <th>Nombre del proyecto</th>
+                                <th>Descripción</th>
+                                <th>Creado por</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in projects %}
+                                <tr>
+                                
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.description }}</td>
+                                    <td>
+                                        {{ item.created_by.first_name}} {{ item.created_by.last_name}}
+                                    </td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<!-- JAVASCRIPT -->
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'libs/simplebar/simplebar.min.js' %}"></script>
+<script src="{% static 'libs/node-waves/waves.min.js' %}"></script>
+<script src="{% static 'libs/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+
+<!-- App js -->
+<script src="{% static 'js/app.js' %}"></script>
+{% endblock scripts %}

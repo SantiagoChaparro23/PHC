@@ -1,0 +1,68 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block head %}
+<!-- Plugins css -->
+{% comment %} <link href="{% static 'libs/dropzone/min/dropzone.min.css' %}" rel="stylesheet" type="text/css" /> {% endcomment %}
+{% endblock head %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Importar archivo</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+
+                <form method="POST" enctype="multipart/form-data">
+
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="file">Archivo (.XLSX)</label>
+                        <input type="file" name="file" id="file" class="filestyle" data-buttonname="btn-secondary">
+                    </div>
+
+                    <p>
+                        Debe verificar que el archivo (XLSX) cuente con las columnas y filas indicadas.
+                    </p>
+
+                    <div class="form-group row mb-0">
+                        <div class="col-12 text-right">
+                            <button type="submit" class="btn btn-primary waves-effect waves-light"><i class="mdi mdi-upload mr-1"></i>Importar</button>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'libs/admin-resources/bootstrap-filestyle/bootstrap-filestyle.min.js' %}"></script>
+
+{% comment %} <!-- JAVASCRIPT -->
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'libs/simplebar/simplebar.min.js' %}"></script>
+<script src="{% static 'libs/node-waves/waves.min.js' %}"></script>
+<script src="{% static 'libs/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+
+<!-- Plugins js -->
+<script src="{% static 'libs/dropzone/min/dropzone.min.js' %}"></script>
+
+<!-- App js -->
+<script src="{% static 'js/app.js' %}"></script> {% endcomment %}
+{% endblock scripts %}

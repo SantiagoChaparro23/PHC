@@ -1,0 +1,112 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block head %}
+<!-- DataTables -->
+<link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+<!-- Responsive datatable examples -->
+<link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock head %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Estudios de conexión</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Lista
+                    {% if perms.lessons.add_connectionstudies  %}
+                        <a class='float-right btn btn-success' href="{% url 'lessons:connection_studies_create'  %}">Crear</a>
+                    {% endif %}
+                </h4>
+
+                <div class="table-responsive">
+                    <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Palabras clave</th>
+                                <th>Creado en</th>
+                                <th>Código</th>
+                                <th>Cliente</th>
+                                <th>Zona</th>
+                                <th>Operador</th>
+                                <th>Área</th>
+                                <th>Tipo de lección</th>
+                                <th>Subcategoría</th>
+                                <th>Descripción</th>
+                                <th>Plan de acción</th>
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in connection_studies %}
+                                <tr>
+                                    <td>{{ item.title|default:"" }}</td>
+                                    <td><a href="{% url 'lessons:connection_studies_detail' item.pk %}">{{ item.created_at }}</a></td>
+                                    <td>{{ item.budgeted_hours|default:"" }}</td>
+                                    <td>{{ item.client|default:"" }}</td>
+                                    <td>{{ item.zone }}</td>
+                                    <td>{{ item.operator }}</td>
+                                    <td>{{ item.area }}</td>
+                                    <td>{{ item.get_lesson_type_display }}</td>
+                                    <td>{{ item.get_subcategory_display|default:"" }}</td>
+                                    <td>{{ item.description|default:"" }}</td>
+                                    <td>{{ item.action_plan|default:"" }}</td>
+                                    <td class="text-right">
+                                        <a href="{% url 'lessons:connection_studies_change' item.pk  %}" class="btn btn-warning btn-sm">Editar</a>
+                                        <a href="{% url 'lessons:connection_studies_delete' item.pk  %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<!-- JAVASCRIPT -->
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'libs/simplebar/simplebar.min.js' %}"></script>
+<script src="{% static 'libs/node-waves/waves.min.js' %}"></script>
+<script src="{% static 'libs/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+
+<!-- Required datatable js -->
+<script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+
+<!-- Buttons examples -->
+<script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'libs/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'libs/pdfmake/build/pdfmake.min.js' %}"></script>
+<script src="{% static 'libs/pdfmake/build/vfs_fonts.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+
+<!-- Responsive examples -->
+<script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+<!-- Datatable init js -->
+<script src="{% static 'js/pages/datatables.init.js' %}"></script>
+
+<!-- App js -->
+<script src="{% static 'js/app.js' %}"></script>
+{% endblock scripts %}

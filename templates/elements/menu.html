@@ -1,0 +1,494 @@
+{% load i18n %}
+
+<div class="vertical-menu">
+
+    <div data-simplebar class="h-100">
+
+        <!--- Sidemenu -->
+        <div id="sidebar-menu">
+            <!-- Left Menu Start -->
+            <ul class="metismenu list-unstyled" id="side-menu">
+
+
+                {% if request.user.is_superuser %}
+                    <li>
+                        <a href="/admin" class="waves-effect">
+                            <i class="mdi mdi-view-dashboard"></i>
+                            <span>Admin Django</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+
+                <li class="menu-title">Aplicaciones</li>
+                {% if perms.imports.view_metric %}
+                    <li>
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>MEC</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            <li>
+                                <a href="{% url 'dashboard:standar'%}" class="waves-effect">
+                                    <span>Estandar</span>
+                                </a>
+                            </li>
+        
+                            <li>
+                                <a href="{% url 'dashboard:search'%}" class="waves-effect">
+                                    <span>Consulta</span>
+                                </a>
+                            </li>
+                            {% if perms.imports.change_metric %}
+                                <li>
+                                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                        <span>Configuraciones</span>
+                                    </a>
+                                    
+                                    <ul class="sub-menu" aria-expanded="false">
+                                        <li><a href="{% url 'dashboard:phenomenon_list' %}">Fenomenos</a></li>
+                                        {% if request.user.is_superuser %}
+                                            <li><a href="{% url 'dashboard:metrics_list' %}">{% trans "Metrics" %}</a></li>
+                                            <li><a href="{% url 'dashboard:files_metrics_list' %}">Archivos de metricas</a></li>
+                                        {% endif %}
+                                        {% comment %} <li><a href="email-compose.html">Email Compose</a></li> {% endcomment %}
+                                    </ul>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {% if perms.lessons.view_connectionstudies or perms.lessons.view_marketstudies or perms.lessons.view_commercial or perms.lessons.view_commercialrelatedarea%}
+                    <li>
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="fab fa-leanpub"></i>
+                            <span>Lecciones aprendidas</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            {% if perms.lessons.view_connectionstudies  %}
+                                <li>
+                                    <a href="{% url 'lessons:connection_studies_list' %}" class="waves-effect">
+                                        <span>Estudios de conexión</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if perms.lessons.view_marketstudies  %}
+                                <li>
+                                    <a href="{% url 'lessons:market_studies_list' %}" class="waves-effect"> 
+                                        <span>Estudios de mercado</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if perms.lessons.view_marketstudies %}
+                                <li>
+                                    <a href="{% url 'lessons:protection_coordination_studies_list' %}" class="waves-effect">
+                                        <span>Estudios de coordinación de protecciones</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if perms.lessons.view_marketstudies %}
+                                <li>
+                                    <a href="{% url 'lessons:electrical_studies_list' %}" class="waves-effect">
+                                        <span>Estudios Eléctricos</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if perms.lessons.view_marketstudies %}
+                                <li>
+                                    <a href="{% url 'lessons:consultancies_list' %}" class="waves-effect">
+                                        <span>Asesorías</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <a href="{% url 'lessons:reports_lessons' %}" class="waves-effect">
+                                    <span>Reportes</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {% if perms.sddp.view_project or perms.sddp.view_dbs %}
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="fas fa-chart-area"></i>
+                        <span>SDDP</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        {% if perms.sddp.view_project  %}
+                            <li>
+                                <a href="{% url 'sddp:projects_list'%}" class="waves-effect">
+                                  
+                                    <span>Proyectos</span>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                    {% if perms.sddp.view_db  %}
+                        <li>
+                            <a href="{% url 'sddp:dbs_list'%}" class="waves-effect">
+                               
+                                <span>Bases de datos</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% if perms.sddp.view_returnrate  %}
+                        <li>
+                            <a href="{% url 'sddp:returnrate_list'%}" class="waves-effect">
+                            
+                                <span>Tasa de retorno</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                   {% if perms.sddp.view_weightblocks  %}
+                        <li>
+                            <a href="{% url 'sddp:weightblocks_list'%}" class="waves-effect">
+                            
+                                <span>Peso bloques</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% if perms.sddp.view_project  %}
+                    <li>
+                        <a href="{% url 'sddp:operational_benefits'%}" class="waves-effect">
+                            <span>Beneficios operativos</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    </ul>
+                </li>
+                {% endif %}
+
+
+                {% if perms.budgeted_hours.view_budgetedhours or perms.budgeted_hours.view_pricerequestformat or perms.budgeted_hours.view_traceabilitybudgetedhours or perms.budgeted_hours.view_client or perms.budgeted_hours.view_activities or perms.budgeted_hours.view_softwares or perms.budgeted_hours.view_operator or perms.budgeted_hours.view_categories or perms.budgeted_hours.view_templatesbudgetedhours %}
+                    <li>
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                           
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>Horas presupuestadas</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            {% if perms.budgeted_hours.view_budgetedhours %}
+                                <li><a href="{% url 'budgeted_hours:budgeted_hours_list' %}">Horas presupuestadas</a></li>
+                            {% endif %}
+                            {% if perms.budgeted_hours.view_pricerequestformat %}
+                                <li><a href="{% url 'budgeted_hours:price_request_format_list' %}">Detalle de oportunidad</a></li>
+                            {% endif %}
+                            {% if perms.budgeted_hours.view_traceabilitybudgetedhours %}
+                                <li><a href="{% url 'budgeted_hours:traceability_budgeted_hours_list' %}">Trazabilidad de horas</a></li>
+                            {% endif %}
+
+                            {% if perms.budgeted_hours.view_client or perms.budgeted_hours.view_activities or perms.budgeted_hours.view_softwares or perms.budgeted_hours.view_operator or perms.budgeted_hours.view_categories or perms.budgeted_hours.view_templatesbudgetedhours %}
+                                <li><a href="#" class="has-arrow">Configuraciones</a>
+                                    <ul class="sub-menu" aria-expanded="true">
+                                        {% if perms.budgeted_hours.view_client %}
+                                            <li><a href="{% url 'budgeted_hours:clients_list' %}">Clientes</a></li>
+                                        {% endif %}
+                                        {% if perms.budgeted_hours.view_templatesbudgetedhours %}
+                                            <li><a href="{% url 'budgeted_hours:templates_budgeted_hours_list' %}">Plantillas de horas</a></li>
+                                        {% endif %}
+
+                                        {% if request.user.is_superuser %}
+                                        {% comment %} {% if perms.budgeted_hours.view_activities %} {% endcomment %}
+                                            <li><a href="{% url 'budgeted_hours:activity_list' %}">Actividades</a></li>
+                                        {% comment %} {% endif %} {% endcomment %}
+                                        {% comment %} {% if perms.budgeted_hours.view_softwares %} {% endcomment %}
+                                            <li><a href="{% url 'budgeted_hours:softwares_list' %}">Softwares</a></li>
+                                        {% comment %} {% endif %} {% endcomment %}
+                                        {% comment %} {% if perms.budgeted_hours.view_operator %} {% endcomment %}
+                                            <li><a href="{% url 'budgeted_hours:operators_list' %}">Operadores</a></li>
+                                        {% comment %} {% endif %} {% endcomment %}
+                                        {% comment %} {% if perms.budgeted_hours.view_categories %} {% endcomment %}
+                                            <li><a href="{% url 'budgeted_hours:categories_list' %}">Horas por alcance</a></li>
+                                        {% comment %} {% endif %} {% endcomment %}
+                                        {% endif %}
+                                    </ul>
+                                </li>
+                            {% endif %}
+                                {% comment %} <li><a href="ui-modals.html">Modals</a></li>
+                                <li><a href="ui-pagination.html">Pagination</a></li>
+                                <li><a href="ui-popover-tooltips.html">Popover &amp; Tooltips</a></li>
+                                <li><a href="ui-rangeslider.html">Range Slider</a></li>
+                                <li><a href="ui-session-timeout.html">Session Timeout</a></li>
+                                <li><a href="ui-progressbars.html">Progress Bars</a></li>
+                                <li><a href="ui-sweet-alert.html">Sweet-Alert</a></li>
+                                <li><a href="ui-tabs-accordions.html">Tabs &amp; Accordions</a></li>
+                                <li><a href="ui-typography.html">Typography</a></li>
+                                <li><a href="ui-video.html">Video</a></li> {% endcomment %}
+                        </ul>
+                    </li>
+                {% endif %}
+
+
+                <li>
+                    <a href="#" class="has-arrow">
+                         <i class="fas fa-stopwatch"></i>
+                        <span>Reporte de horas</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="true"> 
+                        <li>
+                            <a href="{% url 'reported_hours:reported_hours_list' %}">
+                                <span>Reportar tiempo</span>
+                            </a>
+                        </li>
+                       
+
+                        {% if perms.reported_hours.view_usertoreport %}
+                            <li>
+                                <a href="{% url 'reported_hours:reported_hours_reports' %}">
+                                    <span>Reportes</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'reported_hours:sabana' %}">
+                                    <span>Sabana</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                
+                        
+                    </ul>
+                </li>
+
+                {% if perms.record_business_interactions.interaction_type_list or perms.record_business_interactions.visit_record_list or perms.record_business_interactions.query  %}
+                    <li>
+                        <a href="#" class="has-arrow">
+                             <i class="fas fa-handshake"></i>
+                            <span>Interacciones comerciales</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="true"> 
+                            
+                            {% if perms.record_business_interactions.view_visitrecord %}
+                                <li>
+                                    <a href="{% url 'record_business_interactions:visit_record_list' %}">
+                                        <span>Registros de visitas</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if perms.record_business_interactions.view_interactiontype %}                            
+                                <li>
+                                    <a href="{% url 'record_business_interactions:interaction_type_list' %}">
+                                        <span>Tipos de interacciones</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if perms.record_business_interactions.query_querytool %}                            
+                                <li>
+                                    <a href="{% url 'record_business_interactions:query' %}">
+                                        <span>Consulta</span>
+                                    </a>
+                                </li>  
+                            {% endif %}
+                            
+                        </ul>
+                    </li>                
+                {% endif %}
+
+                {% if perms.vacations.view_requests %}
+                    <li>
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="fas fa-umbrella-beach"></i>
+                            <span>Vacaciones</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            {% if perms.vacations.view_collaborator %}
+                                <li><a href="{% url 'vacations:collaborators_list' %}">Colaboradores</a></li>
+                            {% endif %}
+                            {% if perms.vacations.view_bonus %}
+                                <li><a href="{% url 'vacations:bonus_list' %}">Bonos</a></li>
+                            {% endif %}
+                            {% if perms.vacations.view_dayscaused %}
+                                <li><a href="{% url 'vacations:days_caused_list' %}">Días causados</a></li>
+                            {% endif %}
+                            {% if perms.vacations.view_requests %}
+                                <li><a href="{% url 'vacations:requests_list' %}">Solicitudes</a></li>
+                            {% endif %}
+                            {% if perms.vacations.view_settings %}
+                                <li><a href="{% url 'vacations:request_savanna_list' %}">Sabana</a></li>
+                                <li><a href="{% url 'vacations:settings_detail' 1 %}">Configuraciones</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endif %}
+
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i class="mdi mdi-sign-text"></i>
+                        <span>Prototipo</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{% url 'configuration_sddp:search_view' %}">Buscar</a></li>
+                        <li><a href="{% url 'configuration_sddp:fuel_price_option_list' %}">Precio de combustible</a></li>
+                        <li><a href="{% url 'configuration_sddp:growing_rate_list' %}">tasa de crecimiento</a></li>
+                        <li><a href="{% url 'configuration_sddp:project_list' %}">Proyecto</a></li>
+                        <li><a href="{% url 'configuration_sddp:graph_year_list' %}">Año gráfico</a></li>
+                        <li><a href="{% url 'configuration_sddp:additional_capacity_list' %}">Capacidad adicional</a></li>
+                        <li><a href="{% url 'configuration_sddp:meta_matrix_list' %}">Meta matrix</a></li>
+                        <li><a href="{% url 'configuration_sddp:max_new_capacity_list' %}">Capacidad máxima</a></li>
+                        <li><a href="{% url 'configuration_sddp:lcoe_energy_cost_list' %}">Costo de energía LCOE</a></li>
+                        <li><a href="{% url 'configuration_sddp:demand_list' %}">Demanda</a></li>
+                        <li><a href="{% url 'configuration_sddp:plant_type_list' %}">Tipo de planta</a></li>
+                        <li><a href="{% url 'configuration_sddp:fuel_list' %}">Combustible</a></li>
+                        <li><a href="{% url 'configuration_sddp:existing_plants_list' %}">Plantas existentes</a></li>
+                        <li><a href="{% url 'configuration_sddp:future_plants_list' %}">Plantas futuras</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i class="mdi mdi-file-document"></i>
+                        <span>Plantillas PHC</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{% url 'documents:documents_list' %}">Plantillas</a></li>
+                        {% if perms.documents.view_area %}
+                        <li><a href="{% url 'documents:area_list' %}">Áreas</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i class="mdi mdi-file-document"></i>
+                        <span>Marcadores</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{% url 'markers:team_list' %}">Equipos</a></li>
+                        {% if perms.markers.view_match %}
+                        <li><a href="{% url 'markers:match_list' %}">Partidos</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                {% comment %} <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="mdi mdi-chart-line"></i>
+                        <span>Charts</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="charts-morris.html">Morris Chart</a></li>
+                        <li><a href="charts-chartist.html">Chartist Chart</a></li>
+                        <li><a href="charts-chartjs.html">Chartjs Chart</a></li>
+                        <li><a href="charts-flot.html">Flot Chart</a></li>
+                        <li><a href="charts-c3.html">C3 Chart</a></li>
+                        <li><a href="charts-other.html">Jquery Knob Chart</a></li>
+                    </ul>
+                </li> {% endcomment %}
+
+                {% comment %} <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="mdi mdi-format-list-bulleted-type"></i>
+                        <span>Tables</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="tables-basic.html">Basic Tables</a></li>
+                        <li><a href="tables-datatable.html">Data Table</a></li>
+                        <li><a href="tables-responsive.html">Responsive Table</a></li>
+                        <li><a href="tables-editable.html">Editable Table</a></li>
+                    </ul>
+                </li> {% endcomment %}
+
+                {% comment %} <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="mdi mdi-album"></i>
+                        <span>Icons</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="icons-material.html">Material Design</a></li>
+                        <li><a href="icons-ion.html">Ion Icons</a></li>
+                        <li><a href="icons-fontawesome.html">Font Awesome</a></li>
+                        <li><a href="icons-themify.html">Themify Icons</a></li>
+                        <li><a href="icons-dripicons.html">Dripicons</a></li>
+                        <li><a href="icons-typicons.html">Typicons Icons</a></li>
+                    </ul>
+                </li> {% endcomment %}
+
+                {% comment %} <li>
+                    <a href="javascript: void(0);" class="waves-effect">
+                        <span class="badge badge-pill badge-danger float-right">2</span>
+                        <i class="mdi mdi-google-maps"></i>
+                        <span>Maps</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="maps-google.html"> Google Map</a></li>
+                        <li><a href="maps-vector.html"> Vector Map</a></li>
+                    </ul>
+                </li> {% endcomment %}
+
+                {% comment %} <li class="menu-title">Extras</li>
+
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="mdi mdi-responsive"></i>
+                        <span> Layouts </span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="layouts-horizontal.html">Horizontal</a></li>
+                        <li><a href="layouts-light-sidebar.html">Light Sidebar</a></li>
+                        <li><a href="layouts-compact-sidebar.html">Compact Sidebar</a></li>
+                        <li><a href="layouts-icon-sidebar.html">Icon Sidebar</a></li>
+                        <li><a href="layouts-boxed.html">Boxed Layout</a></li>
+                        <li><a href="layouts-preloader.html">Preloader</a></li>
+                        <li><a href="layouts-colored-sidebar.html">Colored Sidebar</a></li>
+                    </ul>
+                </li> {% endcomment %}
+
+                {% comment %} <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="mdi mdi-account-box"></i>
+                        <span> Authentication </span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="pages-login.html">Login</a></li>
+                        <li><a href="pages-register.html">Register</a></li>
+                        <li><a href="pages-recoverpw.html">Recover Password</a></li>
+                        <li><a href="pages-lock-screen.html">Lock Screen</a></li>
+                    </ul>
+                </li> {% endcomment %}
+
+                {% comment %} <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="mdi mdi-google-pages"></i>
+                        <span> Extra Pages </span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="pages-timeline.html">Timeline</a></li>
+                        <li><a href="pages-invoice.html">Invoice</a></li>
+                        <li><a href="pages-directory.html">Directory</a></li>
+                        <li><a href="pages-blank.html">Blank Page</a></li>
+                        <li><a href="pages-404.html">Error 404</a></li>
+                        <li><a href="pages-500.html">Error 500</a></li>
+                    </ul>
+                </li> {% endcomment %}
+
+                {% comment %} <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="mdi mdi-share-variant"></i>
+                        <span>Multi Level</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="true">
+                        <li><a href="javascript: void(0);">Level 1.1</a></li>
+                        <li><a href="javascript: void(0);" class="has-arrow">Level 1.2</a>
+                            <ul class="sub-menu" aria-expanded="true">
+                                <li><a href="javascript: void(0);">Level 2.1</a></li>
+                                <li><a href="javascript: void(0);">Level 2.2</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li> {% endcomment %}
+
+            </ul>
+        </div>
+        <!-- Sidebar -->
+    </div>
+</div>

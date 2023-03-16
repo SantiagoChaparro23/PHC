@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marcadores de Fútbol</title>
+  <!-- Enlace a los archivos CSS de Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Marcadores de Fútbol</h1>
+
+    <!-- Formulario para ingresar los resultados -->
+    <form>
+      <div class="row mb-3">
+
+        <!-- Campo de entrada para el equipo local -->
+        <div class="col-sm-6">
+          <label for="equipoLocal" class="form-label">Equipo Local:</label>
+          <input type="text" id="equipoLocal" name="equipoLocal" class="form-control" placeholder="Nombre del equipo local">
+        </div>
+
+        <!-- Campo de entrada para el equipo visitante -->
+        <div class="col-sm-6">
+          <label for="equipoVisitante" class="form-label">Equipo Visitante:</label>
+          <input type="text" id="equipoVisitante" name="equipoVisitante" class="form-control" placeholder="Nombre del equipo visitante">
+        </div>
+
+      </div>
+
+      <!-- Campos de entrada para los goles -->
+      <div class="row mb-3">
+
+        <!-- Campo de entrada para los goles del equipo local -->
+        <div class="col-sm-6">
+          <label for="golesLocal" class=form-label>Goles Equipo Local:</label>
+          <input type=text id=golesLocal name=golesLocal placeholder=Goles Equipo Local required=true pattern="[0-9]+" title='Ingrese solo números'>
+        </div>
+
+        <!-- Campo de entrada para los goles del equipo visitante -->
+        <div class=col-sm-6>
+          <label for=golesVisitante class=form-label>Goles Equipo Visitante:</label>
+          <input type=text id=golesVisitante name=golesVisitante placeholder=Goles Equipo Visitante required=true pattern="[0-9]+" title='Ingrese solo números'>
+        </div>
+
+      </div>
+
+      <!-- Botón para enviar el formulario -->
+      <button type=submit class='btn btn-primary'>Enviar Resultado</button>
+
+    </form>
+
+  </div>
+
+  <!-- Enlace a los archivos JavaScript de Bootstrap (opcional) -->
+  <!--<script src="/path/to/bootstrap.bundle.min.js"></script>-->
+</body>
+</html>

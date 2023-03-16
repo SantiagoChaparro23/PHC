@@ -1,0 +1,44 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load tz %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Historial de horas presupuestadas</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Detalle</h4>
+                {% for history_data in histories_data %}
+                    <p class="card-title-desc">{{ history_data.budgeted_hours_history.updated_at|timezone:"America/Bogota"|date:"d M Y, h:i a" }} - {{ history_data.budgeted_hours_history.updated_by|truncatechars:20 }}</p>
+
+                    <div class="form-group">
+                        <b>Código: </b>{{ history_data.code }}<br/>
+                        <b>Cliente: </b>{{ history_data.client }}<br/>
+                        <b>Valor: </b>{{ history_data.value }}<br/>
+                        <b>Costos adicionales: </b>{{ history_data.additional_costs }}<br/>
+                    </div>
+                {% endfor %}
+
+                <div class="form-group mb-0">
+                    <div>
+                        <a href="{% url 'budgeted_hours:budgeted_hours_history' %}" class="btn btn-light float-right">Regresar</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}

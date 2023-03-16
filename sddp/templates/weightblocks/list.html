@@ -1,0 +1,64 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% block content %}
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Peso bloques</h4>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+  
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4 ">                    
+                    {% if perms.sddp.add_weightblocks  %}
+                        <a class='float-right btn btn-success' href="{% url 'sddp:weightblocks_create'  %}">Agregar</a>                
+                    {% endif %} 
+                </h4>
+                <div class="table-responsive mt-5">
+                    <table class="table table-centered table-vertical table-nowrap mb-1">
+                        <thead>
+                            <tr>
+                                <th>Peso</th>
+                                <th>Bloque</th>
+                          
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in weightblock %}
+                                <tr>
+                                
+                                    <td>{{ item.weight }}</td>
+                                    <td>{{ item.block }}</td>
+       
+
+                                                              
+                                    <td class='text-right'>
+                                        {% if perms.sddp.change_weightblocks  %}
+                                            <a href="{% url 'sddp:weightblocks_change' item.pk  %}" class="btn btn-info btn-sm">Moficar</a>
+                                        {% endif %} 
+                                    </td> 
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock content %}
+

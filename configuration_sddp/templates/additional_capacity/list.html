@@ -1,0 +1,74 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Capacidad adicional</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">
+                    Lista
+                    <a class='float-right btn btn-success' href="{% url 'configuration_sddp:additional_capacity_create' %}">Crear</a>
+                </h4>
+
+                <div class="table-responsive">
+                    <table class="table table-sm table-centered table-vertical table-nowrap mb-1">
+                        <thead>
+                            <tr>
+                                <th>Proyecto</th>
+                                <th>Año</th>
+                                <th>Eolica</th>
+                                <th>Solar</th>
+                                <th>PCH</th>
+                                <th>NDC_T</th>
+                                <th>Liquidos</th>
+                                <th>Carbón</th>
+                                <th>Gas</th>
+                                <th>GLP</th>
+                                <th>Hidraulica</th>
+                                <th>Relajación</th>
+                                <th>Iteración</th>
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in additional_capacity %}
+                                <tr>
+                                    <td>{{ item.project }}</td>
+                                    <td>{{ item.year }}</td>
+                                    <td>{{ item.wind|floatformat:3 }}</td>
+                                    <td>{{ item.solar|floatformat:3 }}</td>
+                                    <td>{{ item.pch|floatformat:3 }}</td>
+                                    <td>{{ item.thermal_not_centralized|floatformat:3 }}</td>
+                                    <td>{{ item.liquid|floatformat:3 }}</td>
+                                    <td>{{ item.coal|floatformat:3 }}</td>
+                                    <td>{{ item.gas|floatformat:3 }}</td>
+                                    <td>{{ item.glp|floatformat:3 }}</td>
+                                    <td>{{ item.hidro|floatformat:3 }}</td>
+                                    <td>{{ item.relaxation }}</td>
+                                    <td>{{ item.iteration }}</td>
+                                    <td class="text-right">
+                                        <a href="{% url 'configuration_sddp:additional_capacity_change' item.pk  %}" class="btn btn-warning btn-sm">Editar</a>
+                                        <a href="{% url 'configuration_sddp:additional_capacity_delete' item.pk  %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

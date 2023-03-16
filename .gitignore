@@ -1,0 +1,35 @@
+*.log
+*.pot
+*.pyc
+__pycache__
+media
+venv
+env
+# venv
+.env
+.vscode
+.idea
+
+*.sqlite3
+*.sqlite
+
+
+node_modules
+
+cache/*
+
+
+
+storage
+
+# Django #
+storage
+
+static/pictures/*
+static/market_studies/*
+static/connection_studies/*
+static/sddp/*
+
+static/static/lessons/*
+static/static/documents/*
+static/static/configuration_sddp/*

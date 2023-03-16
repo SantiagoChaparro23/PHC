@@ -1,0 +1,358 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Buscar</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <!-- <h4 class="card-title">Crear</h4> -->
+                <!-- <p class="card-title-desc">Ingrese la información que desea registrar</p> -->
+
+                <form>
+                    <div class="row">
+                        <div class="col-md-3 col-form-label">
+                            <label>Buscar proyecto</label>
+                        </div>
+                        <div class="col-md-5">
+                            <select name="q" class="form-control mb-2">
+                                <option value> -------- </option>
+                                {% for item in project %}
+                                    <option value="{{ item.0 }}">{{ item.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="btn btn-primary">Buscar</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    {% if pk %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs nav-tabs-custom" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#graph_year" role="tab">
+                                <span class="d-block d-sm-none"><i class="fas fa-cog"></i></span>
+                                <span class="d-none d-sm-block">Año gráfico</span>
+                            </a>
+                        </li>
+                        <!-- <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#additional_capacity" role="tab">
+                                <span class="d-block d-sm-none"><i class="fas fa-cog"></i></span>
+                                <span class="d-none d-sm-block">Capacidad adicional</span>
+                            </a>
+                        </li> -->
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#meta_matrix" role="tab">
+                                <span class="d-block d-sm-none"><i class="fas fa-cog"></i></span>
+                                <span class="d-none d-sm-block">Meta matrix</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#max_new_capacity" role="tab">
+                                <span class="d-block d-sm-none"><i class="fas fa-cog"></i></span>
+                                <span class="d-none d-sm-block">Capacidad máxima</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#lcoe_energy_cost" role="tab">
+                                <span class="d-block d-sm-none"><i class="fas fa-cog"></i></span>
+                                <span class="d-none d-sm-block">Costo de energía</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#demand" role="tab">
+                                <span class="d-block d-sm-none"><i class="fas fa-cog"></i></span>
+                                <span class="d-none d-sm-block">Demanda</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#existing_plants" role="tab">
+                                <span class="d-block d-sm-none"><i class="fas fa-cog"></i></span>
+                                <span class="d-none d-sm-block">Plantas existentes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#future_plants" role="tab">
+                                <span class="d-block d-sm-none"><i class="fas fa-cog"></i></span>
+                                <span class="d-none d-sm-block">Futuras plantas</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane active p-3" id="graph_year" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Año</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in graph_year %}
+                                            <tr>
+                                                <td>{{ item.year }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% comment %} <div class="tab-pane p-3" id="additional_capacity" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Año</th>
+                                            <th>Eolica</th>
+                                            <th>Solar</th>
+                                            <th>PCH</th>
+                                            <th>NDC_T</th>
+                                            <th>Liquidos</th>
+                                            <th>Carbón</th>
+                                            <th>Gas</th>
+                                            <th>GLP</th>
+                                            <th>Hidraulica</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in additional_capacity %}
+                                            <tr>
+                                                <td>{{ item.year }}</td>
+                                                <td>{{ item.wind }}</td>
+                                                <td>{{ item.solar }}</td>
+                                                <td>{{ item.pch }}</td>
+                                                <td>{{ item.thermal_not_centralized }}</td>
+                                                <td>{{ item.liquid }}</td>
+                                                <td>{{ item.coal }}</td>
+                                                <td>{{ item.gas }}</td>
+                                                <td>{{ item.glp }}</td>
+                                                <td>{{ item.hidro }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> {% endcomment %}
+                        <div class="tab-pane p-3" id="meta_matrix" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Año</th>
+                                            <th>Eolica</th>
+                                            <th>Solar</th>
+                                            <th>PCH</th>
+                                            <th>NDC_T</th>
+                                            <th>Liquidos</th>
+                                            <th>Carbón</th>
+                                            <th>Gas</th>
+                                            <th>GLP</th>
+                                            <th>Hidraulica</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in meta_matrix %}
+                                            <tr>
+                                                <td>{{ item.year }}</td>
+                                                <td>{{ item.wind|floatformat:3 }}</td>
+                                                <td>{{ item.solar|floatformat:3 }}</td>
+                                                <td>{{ item.pch|floatformat:3 }}</td>
+                                                <td>{{ item.thermal_not_centralized|floatformat:3 }}</td>
+                                                <td>{{ item.liquid|floatformat:3 }}</td>
+                                                <td>{{ item.coal|floatformat:3 }}</td>
+                                                <td>{{ item.gas|floatformat:3 }}</td>
+                                                <td>{{ item.glp|floatformat:3 }}</td>
+                                                <td>{{ item.hidro|floatformat:3 }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane p-3" id="max_new_capacity" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Año</th>
+                                            <th>Eolica</th>
+                                            <th>Solar</th>
+                                            <th>PCH</th>
+                                            <th>NDC_T</th>
+                                            <th>Liquidos</th>
+                                            <th>Carbón</th>
+                                            <th>Gas</th>
+                                            <th>GLP</th>
+                                            <th>Hidraulica</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in max_new_capacity %}
+                                            <tr>
+                                                <td>{{ item.year }}</td>
+                                                <td>{{ item.wind|floatformat:3 }}</td>
+                                                <td>{{ item.solar|floatformat:3 }}</td>
+                                                <td>{{ item.pch|floatformat:3 }}</td>
+                                                <td>{{ item.thermal_not_centralized|floatformat:3 }}</td>
+                                                <td>{{ item.liquid|floatformat:3 }}</td>
+                                                <td>{{ item.coal|floatformat:3 }}</td>
+                                                <td>{{ item.gas|floatformat:3 }}</td>
+                                                <td>{{ item.glp|floatformat:3 }}</td>
+                                                <td>{{ item.hidro|floatformat:3 }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane p-3" id="lcoe_energy_cost" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Año</th>
+                                            <th>Eolica</th>
+                                            <th>Solar</th>
+                                            <th>PCH</th>
+                                            <th>NDC_T</th>
+                                            <th>Liquidos</th>
+                                            <th>Carbón</th>
+                                            <th>Gas</th>
+                                            <th>GLP</th>
+                                            <th>Hidraulica</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in lcoe_energy_cost %}
+                                            <tr>
+                                                <td>{{ item.year }}</td>
+                                                <td>{{ item.wind|floatformat:3 }}</td>
+                                                <td>{{ item.solar|floatformat:3 }}</td>
+                                                <td>{{ item.pch|floatformat:3 }}</td>
+                                                <td>{{ item.thermal_not_centralized|floatformat:3 }}</td>
+                                                <td>{{ item.liquid|floatformat:3 }}</td>
+                                                <td>{{ item.coal|floatformat:3 }}</td>
+                                                <td>{{ item.gas|floatformat:3 }}</td>
+                                                <td>{{ item.glp|floatformat:3 }}</td>
+                                                <td>{{ item.hidro|floatformat:3 }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane p-3" id="demand" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Día mes</th>
+                                            <th>Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in demand %}
+                                            <tr>
+                                                <td>{{ item.demand_at }}</td>
+                                                <td>{{ item.month_days }}</td>
+                                                <td>{{ item.value|floatformat:3 }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane p-3" id="existing_plants" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Tipo de planta</th>
+                                            <th>Combustible</th>
+                                            <th>Nombre</th>
+                                            <th>Obligación de fiabilidad</th>
+                                            <th>Contrato a largo plazo</th>
+                                            <th>Despacho central</th>
+                                            <th>Potencia nominal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in existing_plants %}
+                                            <tr>
+                                                <td>{{ item.plant_type }}</td>
+                                                <td>{{ item.fuel }}</td>
+                                                <td>{{ item.name }}</td>
+                                                <td>{{ item.reliability_obligation }}</td>
+                                                <td>{{ item.long_term_contract }}</td>
+                                                <td>{{ item.central_dispatch }}</td>
+                                                <td>{{ item.nominal_power }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane p-3" id="future_plants" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Tipo de planta</th>
+                                            <th>Combustible</th>
+                                            <th>Nombre</th>
+                                            <th>Obligación de fiabilidad</th>
+                                            <th>Contrato a largo plazo</th>
+                                            <th>Despacho central</th>
+                                            <th>Potencia nominal</th>
+                                            <th>Inicia en</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in future_plants %}
+                                            <tr>
+                                                <td>{{ item.plant_type }}</td>
+                                                <td>{{ item.fuel }}</td>
+                                                <td>{{ item.name }}</td>
+                                                <td>{{ item.reliability_obligation }}</td>
+                                                <td>{{ item.long_term_contract }}</td>
+                                                <td>{{ item.central_dispatch }}</td>
+                                                <td>{{ item.nominal_power }}</td>
+                                                <td>{{ item.start_at }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <!-- end col -->
+</div>
+{% endblock content %}

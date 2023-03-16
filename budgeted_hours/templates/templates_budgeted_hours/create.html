@@ -1,0 +1,199 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block head %}
+<link href="{% static 'libs/select2/css/select2.min.css' %}" rel="stylesheet" type="text/css" />
+{% comment %} <link href="{% static 'libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+<link href="{% static 'libs/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css' %}" rel="stylesheet">
+<link href="{% static 'libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css' %}" rel="stylesheet" /> {% endcomment %}
+{% endblock head %}
+
+{% block content %}
+{% comment %} {% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert mt-1 alert-danger">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                {{ field.label }}: <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %} {% endcomment %}
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-sm-6">
+        <div class="page-title-box">
+            <h4>Plantilla de horas política</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Crear</h4>
+                <p class="card-title-desc">Ingrese las horas de la plantilla que desea registrar</p>
+
+                <form method='POST'>
+
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    {% comment %} {{nombre}} {% endcomment %}
+                    {% comment %} {{ study_type }} {% endcomment %}
+                    {% comment %} {{ form.template_name|as_crispy_field }} {% endcomment %}
+                    {% comment %} {{ form.service_type|as_crispy_field }} {% endcomment %}
+                    {% comment %} {{ form.study_type|as_crispy_field }} {% endcomment %}
+
+                    {% comment %} <div class="form-group">
+                        <label for="software">Software</label>
+                        <div class="">
+                            <select class="form-control" name="software" id="software" required>
+                                <option value selected>---------</option>
+                                {% for software in softwares %}
+                                    <option value="{{ software.id }}">{{ software }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div> {% endcomment %}
+
+                    {% comment %} <div class="form-group">
+                        <label class="control-label" for="id_study_type">Tipo servicio</label>
+                        <div class="">
+                            <select class="form-control" name="study_type" id="id_study_type" required>
+                                <option value selected>---------</option>
+                                {% for studytype in study_type %}
+                                    <option value="{{ studytype.0 }}">{{ studytype.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div> {% endcomment %}
+
+                    <table id="activityTable" class="table table-striped m-b-0">
+                        <thead>
+                            <tr>
+                                <th width="20%">Actividad</th>
+                                <th>Horas ingeniero</th>
+                                <th>Horas líder</th>
+                                <th>Horas gerencia</th>
+                                <th width="15%">Tipo software</th>
+                                <th>Horas software</th>
+                                <th>Horas externo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% comment %} <tr>
+                                <td></td>
+                                <td><input type="text" class="form-control"></td>
+                                <td><input type="text" class="form-control"></td>
+                                <td><input type="text" class="form-control"></td>
+                                <td><input type="text" class="form-control"></td>
+                            </tr> {% endcomment %}
+                        </tbody>
+                    </table>
+
+                    {% comment %} {{ form.activity|as_crispy_field }}
+                    {{ form.engineer|as_crispy_field }}
+                    {{ form.leader|as_crispy_field }}
+                    {{ form.management|as_crispy_field }} {% endcomment %}
+
+
+                    <div class="form-group mb-0">
+                        <div>
+                            <button type="submit" class="btn btn-primary waves-effect waves-light float-right" id="button-save">
+                                Guardar
+                            </button>
+                            <a href="{% url 'budgeted_hours:templates_budgeted_hours_list' %}" class="btn btn-light">Regresar</a>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<!-- JAVASCRIPT -->
+{% comment %} <script src="{% static 'libs/jquery/jquery.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/metismenu/metisMenu.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/simplebar/simplebar.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/node-waves/waves.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'libs/jquery-sparkline/jquery.sparkline.min.js' %}"></script> {% endcomment %}
+
+<script src="{% static 'libs/select2/js/select2.min.js' %}"></script>
+{% comment %} <script src="{% static 'libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'libs/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js' %}"></script>
+<script src="{% static 'libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js' %}"></script>
+<script src="{% static 'libs/admin-resources/bootstrap-filestyle/bootstrap-filestyle.min.js' %}"></script>
+<script src="{% static 'libs/bootstrap-maxlength/bootstrap-maxlength.min.js' %}"></script> {% endcomment %}
+
+<script src="{% static 'js/pages/form-advanced.init.js' %}"></script>
+
+<!-- App js -->
+{% comment %} <script src="{% static 'js/app.js' %}"></script> {% endcomment %}
+
+<script>
+    $(document).ready(function(){
+        $('#activityTable').hide()
+    })
+
+    $(function(){
+        $('#activityTable tbody').empty()
+        $('#button-save').hide()
+        $('#id_service_type').on('change', function(){
+            $('#activityTable').show()
+            var id = this.value
+            var url = `{% url 'budgeted_hours:activities_by_service_template' %}?id_service_type=${id}`
+            $('#activityTable tbody').empty()
+            $.get(url, function(data){
+                var activities = data.activities
+                for (var index = 0; index < activities.length; index++) {
+                    var element = activities[index];
+                    // console.log(element.activity)
+                    $('#activityTable tbody')
+                        .append(`
+                            <tr>
+                                <td>${element.activity}</td>
+                                <td><input type="number" name="engineer[]" step="0.1" class="form-control" value="0"></td>
+                                <td><input type="number" name="leader[]" step="0.1" class="form-control" value="0"></td>
+                                <td><input type="number" name="management[]" step="0.1" class="form-control" value="0"></td>
+                                <td>
+                                    <select class="form-control" name="type_software[]">
+                                        <option value selected>---------</option>
+                                        {% for software in softwares %}
+                                            <option value="{{ software.id }}">{{ software }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td><input type="number" name="software[]" step="0.1" class="form-control" value="0"></td>
+                                <td><input type="number" name="external[]" step="0.1" class="form-control" value="0"></td>
+                            </tr>
+                        `)
+                }
+                // console.table(data.activities)
+                var tbody = $('#activityTable tbody')
+                if (tbody.children().length == 0){
+                    $('#button-save').hide()
+                }else{
+                    $('#button-save').show()
+                }
+            })
+        })
+    })
+</script>
+{% endblock scripts %}

@@ -1,0 +1,46 @@
+{% extends "layouts/app.html" %}
+{% load i18n %}
+{% load static %}
+
+
+
+
+{% block head %}
+   <style>
+    .mx-datepicker-range {
+        width: 100% !important;
+    }
+
+   </style>
+{% endblock head %}
+
+{% block scripts  %}
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+ <script src="{% static 'js/mec.js' %}?v={{version}}"></script>
+    
+{% endblock scripts  %}
+
+{% block content %}
+  
+    <div class="row" id='search-app'>
+
+        <div class="col-md-12">
+    
+            <search-component 
+            components_url='{% url 'dashboard:get_components_by_metric' %}'
+            api_url='{% url 'api:api' %}'
+            :resamples="{{resamples}}"
+            :periods="{{periods}}"
+            :metrics='{{metrics|safe}}' ></search-component>
+        </div>
+       
+        <!-- Net effective capacity --> 
+       
+
+    </div>
+    <!-- end row -->
+
+
+
+{% endblock content %}
+
